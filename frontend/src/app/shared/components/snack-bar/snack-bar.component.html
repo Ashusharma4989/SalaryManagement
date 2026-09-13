@@ -1,0 +1,22 @@
+@if (svc.current() as cfg) {
+  <div class="sb-overlay" (click)="svc.close()">
+    <div
+      class="snackbar sb-{{ cfg.type }}"
+      (click)="$event.stopPropagation()"
+      role="status"
+      aria-live="polite"
+    >
+      <span class="msg">{{ cfg.message }}</span>
+      @if (cfg.action) {
+        <button type="button" class="action" (click)="takeAction()">{{ cfg.action }}</button>
+      }
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="svc.close()"
+        >×</button
+      >
+    </div>
+  </div>
+}

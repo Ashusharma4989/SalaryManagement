@@ -1,0 +1,97 @@
+.data-table {
+  position: relative;
+}
+
+.data-table.is-loading {
+  opacity: 0.6;
+}
+
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dt-table th,
+.dt-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #374151;
+  text-align: left;
+}
+
+.dt-table thead th {
+  background: #1f2937;
+  color: #d1d5db;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.dt-table tbody tr:hover {
+  background: #111827;
+}
+
+.dt-table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.sortable {
+  cursor: pointer;
+}
+
+.sort-icon {
+  margin-left: 0.3rem;
+  opacity: 0.4;
+}
+
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-head {
+  width: 1%;
+}
+
+.skeleton-row {
+  height: 1rem;
+  background: #374151;
+  border-radius: 4px;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.dt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0.25rem;
+}
+
+.dt-info {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.dt-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.page-info {
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+select {
+  background: #1f2937;
+  color: #f3f4f6;
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+}
