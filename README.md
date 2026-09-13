@@ -167,7 +167,7 @@ Important: in frontend services use relative API paths (e.g., `/api/v1/employees
 Start DB (example using psql/pg_ctl depends on your installation):
 ```bash
 # psql test
-PGPASSWORD=Hr@123 psql -h localhost -U hr_user -d salary_management -c "SELECT 1;"
+PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h localhost -U "$SPRING_DATASOURCE_USERNAME" -d salary_management -c "SELECT 1;"
 # stop EnterpriseDB installation (example path)
 sudo /Library/PostgreSQL/15/bin/pg_ctl -D /Library/PostgreSQL/15/data stop
 ```

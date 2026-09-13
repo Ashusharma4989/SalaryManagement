@@ -28,6 +28,3 @@ app:
     # Set APP_JWT_SECRET env var in production. Empty = random per-startup (dev only).
     secret: ${APP_JWT_SECRET:}
     expiration-ms: 86400000
-  seed:
-    admin-password: Admin@12345
-    hr-password: Hr@12345
