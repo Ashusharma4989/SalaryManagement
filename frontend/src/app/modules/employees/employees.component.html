@@ -1,0 +1,104 @@
+<app-page-header title="Employees" subtitle="Manage employee records." />
+
+<app-card [title]="editingId() ? 'Edit Employee' : 'Add New Employee'">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    class="form-grid"
+  >
+    <app-form-field
+      [form]="form"
+      controlName="employeeNumber"
+      label="Employee Number"
+      type="text"
+      placeholder="e.g. EMP-001"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="firstName"
+      label="First Name"
+      type="text"
+      placeholder="e.g. John"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="lastName"
+      label="Last Name"
+      type="text"
+      placeholder="e.g. Doe"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="email"
+      label="Email"
+      type="email"
+      placeholder="e.g. john.doe@example.com"
+    />
+    <div class="form-field">
+      <label>Department</label>
+      <select
+        formControlName="departmentId"
+        [compareWith]="compareFn"
+      >
+        <option [value]="null">-- None --</option>
+        @for (d of departments(); track d.id) {
+          <option [value]="d.id">{{ d.name }}</option>
+        }
+      </select>
+    </div>
+    <app-form-field
+      [form]="form"
+      controlName="location"
+      label="Location"
+      type="text"
+      placeholder="e.g. New York"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="currencyCode"
+      label="Currency"
+      type="text"
+      placeholder="USD"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="hireDate"
+      label="Hire Date"
+      type="date"
+    />
+
+    <div class="form-actions">
+      <button
+        app-button
+        variant="primary"
+        type="submit"
+        [loading]="saving()"
+        [disabled]="form.invalid || saving()"
+      >
+        {{ editingId() ? 'Update' : 'Create' }}
+      </button>
+      <button
+        app-button
+        variant="ghost"
+        type="button"
+        (clicked)="add()"
+      >
+        New
+      </button>
+    </div>
+  </form>
+</app-card>
+
+<app-card>
+  <app-data-table
+    [columns]="columns"
+    [rows]="employees()"
+    [loading]="loading()"
+    [total]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [actions]="actions"
+    [rowKey]="'id'"
+    (pageChange)="onPageChange($event)"
+  />
+</app-card>

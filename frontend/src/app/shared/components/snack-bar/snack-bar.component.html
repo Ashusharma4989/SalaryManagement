@@ -1,4 +1,5 @@
-@if (svc.current() as cfg) {
+@let cfg = config();
+@if (cfg) {
   <div class="sb-overlay" (click)="svc.close()">
     <div
       class="snackbar sb-{{ cfg.type }}"

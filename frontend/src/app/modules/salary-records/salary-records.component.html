@@ -1,0 +1,120 @@
+<app-page-header title="Salary Records" subtitle="Create and manage salary records with earning/deduction items." />
+
+<app-card [title]="editingId() ? 'Edit Salary Record' : 'Add New Salary Record'">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    class="form-grid"
+  >
+    <div class="form-field">
+      <label>Employee</label>
+      <select formControlName="employeeId">
+        <option [value]="null" disabled selected>-- Select --</option>
+        @for (e of employees(); track e.id) {
+          <option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Pay Period</label>
+      <select formControlName="payPeriodId">
+        <option [value]="null" disabled selected>-- Select --</option>
+        @for (p of payPeriods(); track p.id) {
+          <option [value]="p.id">{{ p.startDate }} – {{ p.endDate }} ({{ p.status }})</option>
+        }
+      </select>
+    </div>
+
+    <app-form-field
+      [form]="form"
+      controlName="baseSalary"
+      label="Base Salary"
+      type="number"
+      placeholder="0.00"
+    />
+    <app-form-field
+      [form]="form"
+      controlName="currencyCode"
+      label="Currency"
+      type="text"
+      placeholder="USD"
+    />
+
+    <div class="form-field items-section">
+      <label>Salary Items</label>
+      <div class="items-list" formArrayName="salaryItems">
+        @for (item of itemControls; track $index) {
+          <div [formGroup]="item" class="item-row">
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Item name"
+            />
+            <select formControlName="type">
+              <option value="EARNING">EARNING</option>
+              <option value="DEDUCTION">DEDUCTION</option>
+            </select>
+            <input
+              type="number"
+              formControlName="amount"
+              placeholder="Amount"
+            />
+            <button
+              app-button
+              variant="danger"
+              size="sm"
+              type="button"
+              (clicked)="removeItem($index)"
+            >
+              ✕
+            </button>
+          </div>
+        }
+      </div>
+      <button
+        app-button
+        variant="secondary"
+        size="sm"
+        type="button"
+        (clicked)="addItemRow()"
+      >
+        + Add Item
+      </button>
+    </div>
+
+    <div class="form-actions">
+      <button
+        app-button
+        variant="primary"
+        type="submit"
+        [loading]="saving()"
+        [disabled]="form.invalid || items.length === 0 || saving()"
+      >
+        {{ editingId() ? 'Update' : 'Create' }}
+      </button>
+      <button
+        app-button
+        variant="ghost"
+        type="button"
+        (clicked)="add()"
+      >
+        New
+      </button>
+    </div>
+  </form>
+</app-card>
+
+<app-card>
+  <app-data-table
+    [columns]="columns"
+    [rows]="records()"
+    [loading]="loading()"
+    [total]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [actions]="actions"
+    [rowKey]="'id'"
+    (pageChange)="onPageChange($event)"
+  />
+</app-card>

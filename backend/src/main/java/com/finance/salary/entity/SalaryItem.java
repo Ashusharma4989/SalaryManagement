@@ -16,16 +16,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "salary_items")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"salaryRecord"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class SalaryItem {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "salary_record_id", nullable = false)
     private SalaryRecord salaryRecord;

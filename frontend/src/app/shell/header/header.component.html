@@ -1,0 +1,36 @@
+<header class="header">
+  <div class="header-left">
+    <button
+      class="menu-toggle"
+      type="button"
+      (click)="toggleSidebar.emit()"
+      [attr.aria-label]="'Toggle navigation'"
+      aria-label="Toggle navigation"
+    >
+      <span class="menu-icon">≡</span>
+    </button>
+    <span class="app-icon" aria-hidden="true">💼</span>
+    <span class="separator"></span>
+    <span class="app-name">Salary Management</span>
+  </div>
+
+  @if (auth.isAuthenticated()) {
+    <div class="header-right">
+      <span class="user-info">
+        <span class="user-name">{{ auth.username() }}</span>
+        <span class="user-role">{{ auth.role() }}</span>
+      </span>
+      <button
+        class="signout-btn"
+        type="button"
+        (click)="signOut.emit()"
+      >
+        Sign Out
+      </button>
+    </div>
+  } @else {
+    <div class="header-right">
+      <a routerLink="/login" class="login-link">Login</a>
+    </div>
+  }
+</header>

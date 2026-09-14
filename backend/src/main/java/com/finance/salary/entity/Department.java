@@ -14,12 +14,11 @@ import java.util.Set;
 @Entity
 @Table(name = "departments")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"employees"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Department {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

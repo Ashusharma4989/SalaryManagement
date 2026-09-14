@@ -15,12 +15,11 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"employee"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,6 +36,7 @@ public class User {
     @Column(nullable = false)
     private String role; // e.g., "ROLE_ADMIN", "ROLE_HR"
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = true)
     private Employee employee;

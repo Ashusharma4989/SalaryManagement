@@ -1,0 +1,37 @@
+.shell-body {
+  display: flex;
+  height: calc(100vh - 3.5rem - 2.25rem);
+  position: relative;
+}
+
+.shell-main {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
+  padding: 1.5rem;
+}
+
+.overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .shell-body {
+    height: calc(100vh - 3.5rem - 2.25rem);
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    bottom: 2.25rem;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 800;
+  }
+
+  .shell-main {
+    padding: 1rem;
+  }
+}

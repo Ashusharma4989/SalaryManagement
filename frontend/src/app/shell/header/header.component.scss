@@ -1,0 +1,107 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e2937;
+  color: #f3f4f6;
+  padding: 0 1.25rem;
+  height: 3.5rem;
+  border-bottom: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.menu-toggle {
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.25rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.menu-toggle:hover {
+  color: #f3f4f6;
+  background: #374151;
+}
+
+.app-icon {
+  font-size: 1.4rem;
+}
+
+.separator {
+  width: 1px;
+  height: 1.5rem;
+  background: #4b5563;
+}
+
+.app-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f9fafb;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.user-role {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.signout-btn {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #d1d5db;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.signout-btn:hover {
+  background: #374151;
+  color: #f3f4f6;
+}
+
+.login-link {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.login-link:hover {
+  color: #f3f4f6;
+}
+
+@media (max-width: 768px) {
+  .user-info {
+    display: none;
+  }
+}

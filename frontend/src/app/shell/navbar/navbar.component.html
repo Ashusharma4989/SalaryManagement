@@ -1,0 +1,42 @@
+<nav class="sidebar" [class.collapsed]="collapsed">
+      <ul class="nav-list">
+    <li class="nav-item">
+      <a routerLink="/" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text" [class.hidden]="collapsed">Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/departments" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">🏢</span>
+        <span class="nav-text" [class.hidden]="collapsed">Departments</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/employees" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text" [class.hidden]="collapsed">Employees</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/pay-periods" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">📅</span>
+        <span class="nav-text" [class.hidden]="collapsed">Pay Periods</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/salary-records" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">💰</span>
+        <span class="nav-text" [class.hidden]="collapsed">Salary Records</span>
+      </a>
+    </li>
+    @if (auth.hasRole('ADMIN')) {
+      <li class="nav-item">
+        <a routerLink="/users" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-text" [class.hidden]="collapsed">Users</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

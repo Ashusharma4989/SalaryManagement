@@ -1,0 +1,13 @@
+<div class="card" [class.p-sm]="padding === 'sm'" [class.p-md]="padding === 'md'" [class.p-lg]="padding === 'lg'">
+  @if (title) {
+    <div class="card-header">
+      <h2 class="card-title">{{ title }}</h2>
+      @if (subtitle) {
+        <p class="card-subtitle">{{ subtitle }}</p>
+      }
+    </div>
+  }
+  <div class="card-body">
+    <ng-content />
+  </div>
+</div>

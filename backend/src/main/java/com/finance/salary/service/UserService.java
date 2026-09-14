@@ -48,7 +48,8 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole("ROLE_HR");
+        user.setRole(request.getRole() != null && !request.getRole().isBlank()
+                ? request.getRole() : "ROLE_HR");
         user.setEmployee(employee);
         return mapper.toUserDTO(repository.save(user));
     }

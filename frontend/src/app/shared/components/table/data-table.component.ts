@@ -108,7 +108,7 @@ export class DataTableComponent<T = unknown> {
   }
 
   changeSize(event: Event): void {
-    const value = (event.target as HTMLSelectElement)?.valueAsNumber;
+    const value = Number((event.target as HTMLSelectElement)?.value);
     const size = value && value > 0 ? value : this.pageSize;
     this.pageChange.emit({ page: 0, size });
   }

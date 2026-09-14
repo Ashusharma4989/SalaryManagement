@@ -1,0 +1,16 @@
+<app-header
+  (toggleSidebar)="toggleSidebar()"
+  (signOut)="signOut()" />
+
+<div class="shell-body">
+  <app-navbar [collapsed]="sidebarCollapsed()" />
+  @if (sidebarCollapsed()) {
+    <div class="overlay" (click)="toggleSidebar()"></div>
+  }
+  <main class="shell-main">
+    <router-outlet />
+  </main>
+</div>
+
+<app-footer />
+<app-snackbar />

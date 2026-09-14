@@ -19,20 +19,21 @@ import java.util.Set;
 @Entity
 @Table(name = "salary_records")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"salaryItems", "employee", "payPeriod", "processedBy"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class SalaryRecord {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pay_period_id", nullable = false)
     private PayPeriod payPeriod;
@@ -63,6 +64,7 @@ public class SalaryRecord {
     @Column(nullable = false)
     private String status; // e.g., "DRAFT", "POSTED", "PROCESSED"
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "processed_by", nullable = true)
     private User processedBy;

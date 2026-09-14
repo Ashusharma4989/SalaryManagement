@@ -16,12 +16,11 @@ import java.util.Set;
 @Entity
 @Table(name = "pay_periods")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"salaryRecords"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class PayPeriod {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -18,12 +18,11 @@ import java.util.Set;
 @Entity
 @Table(name = "employees")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"department", "users", "salaryRecords"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,6 +43,7 @@ public class Employee {
     @Column(unique = true)
     private String email;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", nullable = true)
     private Department department;

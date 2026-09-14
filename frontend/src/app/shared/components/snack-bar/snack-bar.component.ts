@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SnackbarService } from '../../services/snack-bar.service';
 
@@ -14,8 +14,10 @@ export class SnackbarComponent {
 
   private timer: ReturnType<typeof setTimeout> | null = null;
 
+  readonly config = computed(() => this.svc.current());
+
   readonly autoDismiss = effect(() => {
-    const cfg = this.svc.current();
+    const cfg = this.config();
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
