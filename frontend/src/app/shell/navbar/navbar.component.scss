@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   width: 240px;
-  background: #1e2937;
+  height: 100%;
+  background: linear-gradient(180deg, #1e2937 0%, #111827 100%);
   color: #d1d5db;
   border-right: 1px solid #334155;
   flex-shrink: 0;
@@ -17,10 +18,11 @@
 .nav-list {
   list-style: none;
   margin: 0;
-  padding: 0.5rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
 }
 
 .nav-item {
@@ -71,7 +73,7 @@
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    height: calc(100vh - 3.5rem - 2.25rem);
+    height: calc(100vh - 3.5rem);
     z-index: 900;
     transform: translateX(-100%);
     transition: transform 0.2s ease;

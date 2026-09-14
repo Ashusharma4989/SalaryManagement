@@ -1,7 +1,15 @@
+.shell-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
 .shell-body {
   display: flex;
-  height: calc(100vh - 3.5rem - 2.25rem);
-  position: relative;
+  flex: 1;
+  overflow: hidden;
 }
 
 .shell-main {
@@ -16,17 +24,13 @@
 }
 
 @media (max-width: 768px) {
-  .shell-body {
-    height: calc(100vh - 3.5rem - 2.25rem);
-  }
-
   .overlay {
     display: block;
     position: fixed;
     top: 3.5rem;
     left: 0;
     right: 0;
-    bottom: 2.25rem;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.3);
     z-index: 800;
   }

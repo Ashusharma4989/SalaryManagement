@@ -1,11 +1,33 @@
 .footer {
+  background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+  color: #94a3b8;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1rem;
-  background: #1e293b;
-  color: #9ca3af;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.8rem;
-  border-top: 1px solid #334155;
-  flex-shrink: 0;
+  font-weight: 400;
+}
+
+.footer-text {
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+.footer-dot {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.footer-version {
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: #64748b;
 }

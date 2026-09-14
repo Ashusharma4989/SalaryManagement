@@ -4,7 +4,6 @@
       class="menu-toggle"
       type="button"
       (click)="toggleSidebar.emit()"
-      [attr.aria-label]="'Toggle navigation'"
       aria-label="Toggle navigation"
     >
       <span class="menu-icon">≡</span>
@@ -21,9 +20,11 @@
         <span class="user-role">{{ auth.role() }}</span>
       </span>
       <button
-        class="signout-btn"
+        app-button
+        variant="ghost"
+        size="sm"
         type="button"
-        (click)="signOut.emit()"
+        (clicked)="signOut.emit()"
       >
         Sign Out
       </button>
