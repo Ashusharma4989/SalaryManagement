@@ -1,66 +1,43 @@
-<app-page-header title="Users" subtitle="Manage system users. New users default to ROLE_HR." />
-
-<app-card title="Create New User">
-  <form
-    [formGroup]="form"
-    (ngSubmit)="submit()"
-    class="form-grid"
-  >
-    <app-form-field
-      [form]="form"
-      controlName="username"
-      label="Username"
-      type="text"
-      placeholder="e.g. hr_new"
-    />
-    <app-form-field
-      [form]="form"
-      controlName="password"
-      label="Password"
-      type="password"
-      placeholder="Min 8 characters"
-    />
-    <div class="form-field">
-      <label>Role</label>
-      <select formControlName="role">
-        @for (opt of roleOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="form-actions">
-      <button
-        app-button
-        variant="primary"
-        type="submit"
-        [loading]="creating()"
-        [disabled]="form.invalid || creating()"
-      >
-        {{ creating() ? 'Creating…' : 'Create User' }}
-      </button>
-      <button
-        app-button
-        variant="ghost"
-        type="button"
-        (clicked)="resetForm()"
-      >
-        Reset
-      </button>
-    </div>
-  </form>
-</app-card>
-
-<app-card>
-  <app-data-table
-    [columns]="columns"
-    [rows]="users()"
-    [loading]="loading()"
-    [total]="total()"
-    [pageIndex]="pageIndex()"
-    [pageSize]="pageSize()"
-    [actions]="actions"
-    [rowKey]="'id'"
-    (pageChange)="onPageChange($event)"
+<app-page-template
+  pageTitle="Users"
+  pageDescription="Manage system users. New users default to ROLE_HR."
+  cardTitle="Create New User"
+  [pageForm]="form"
+  [saving]="creating()"
+  submitLabel="Create User"
+  [columns]="columns"
+  [rows]="users()"
+  [loading]="loading()"
+  [total]="total()"
+  [pageIndex]="pageIndex()"
+  [pageSize]="pageSize()"
+  [actions]="actions"
+  rowKey="id"
+  (formSubmit)="submit()"
+  (pageChange)="onPageChange($event)"
+>
+  <app-form-field
+    page-template-form
+    [form]="form"
+    controlName="username"
+    label="Username"
+    type="text"
+    placeholder="e.g. hr_new"
   />
-</app-card>
+  <app-form-field
+    page-template-form
+    [form]="form"
+    controlName="password"
+    label="Password"
+    type="password"
+    placeholder="Min 8 characters"
+  />
+  <app-form-field
+    page-template-form
+    [form]="form"
+    controlName="role"
+    label="Role"
+    type="select"
+    [options]="roleOptions"
+  />
+</app-page-template>

@@ -1,5 +1,5 @@
-<div class="form-field">
-  @if (label) {
+<div class="form-field" [class.compact]="compact">
+  @if (label && !compact) {
     <label [attr.for]="controlName">{{ label }}</label>
   }
 
@@ -10,8 +10,25 @@
       [placeholder]="placeholder"
       [autocomplete]="autocomplete"
       [rows]="rows"
-      ></textarea>
-  } @else {
+    ></textarea>
+  }
+
+  @if (type === 'select') {
+    <select
+      [formControlName]="controlName"
+      [id]="controlName"
+      [class.compact]="compact"
+    >
+      @if (placeholder) {
+        <option [value]="null" disabled>{{ placeholder }}</option>
+      }
+      @for (opt of options; track $index) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+  }
+
+  @if (type !== 'textarea' && type !== 'select') {
     <input
       [formControlName]="controlName"
       [id]="controlName"

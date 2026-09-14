@@ -5,11 +5,9 @@ import { finalize } from 'rxjs/operators';
 
 import { ApiService, PagedResponse } from '../../shared/services/api.service';
 import { SnackbarService } from '../../shared/services/snack-bar.service';
-import { DataTableComponent, DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
+import { DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
 import { FormFieldComponent } from '../../shared/components/form/form-field.component';
-import { CardComponent } from '../../shared/components/card/card.component';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { PageTemplateComponent } from '../../shared/components/page-template/page-template.component';
 import { DepartmentDTO } from '../../shared/models';
 
 @Component({
@@ -18,11 +16,8 @@ import { DepartmentDTO } from '../../shared/models';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    DataTableComponent,
-    ButtonComponent,
     FormFieldComponent,
-    CardComponent,
-    PageHeaderComponent,
+    PageTemplateComponent,
   ],
   templateUrl: './departments.component.html',
   styleUrls: ['./departments.component.scss'],

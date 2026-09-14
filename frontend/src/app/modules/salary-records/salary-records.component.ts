@@ -6,19 +6,19 @@ import {
   FormGroup,
   Validators,
   FormArray,
-  FormsModule,
 } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 
 import { ApiService, PagedResponse } from '../../shared/services/api.service';
 import { SnackbarService } from '../../shared/services/snack-bar.service';
 import { AuthService } from '../../auth/auth.service';
-import { DataTableComponent, DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
+import { DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
 import { FormFieldComponent } from '../../shared/components/form/form-field.component';
-import { CardComponent } from '../../shared/components/card/card.component';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { EmployeeDTO, PayPeriodDTO, SalaryRecordDTO, SalaryItemDTO, UserDTO } from '../../shared/models';
+import { SalaryItemsFieldComponent } from '../../shared/components/form/salary-items-field.component';
+import { PageTemplateComponent } from '../../shared/components/page-template/page-template.component';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { EmployeeDTO, PayPeriodDTO, SalaryRecordDTO, UserDTO } from '../../shared/models';
+import { SelectOption } from '../../shared/components/form/form-field.component';
 
 @Component({
   selector: 'app-salary-records',
@@ -26,12 +26,9 @@ import { EmployeeDTO, PayPeriodDTO, SalaryRecordDTO, SalaryItemDTO, UserDTO } fr
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,
-    DataTableComponent,
-    ButtonComponent,
     FormFieldComponent,
-    CardComponent,
-    PageHeaderComponent,
+    SalaryItemsFieldComponent,
+    PageTemplateComponent,
   ],
   templateUrl: './salary-records.component.html',
   styleUrls: ['./salary-records.component.scss'],
@@ -194,7 +191,6 @@ export class SalaryRecordsComponent implements OnInit {
   add(): void {
     this.editingId.set(null);
     this.items.clear();
-    this.addItemRow();
     this.form.reset({
       currencyCode: 'USD',
     });
@@ -204,18 +200,6 @@ export class SalaryRecordsComponent implements OnInit {
     this.editingId.set(null);
     this.items.clear();
     this.form.reset({ currencyCode: 'USD' });
-  }
-
-  addItemRow(): void {
-    this.items.push(this.fb.group({
-      name: ['', Validators.required],
-      type: ['EARNING', Validators.required],
-      amount: ['', [Validators.required, Validators.min(0.01)]],
-    }));
-  }
-
-  removeItem(index: number): void {
-    this.items.removeAt(index);
   }
 
   submit(): void {
@@ -288,5 +272,19 @@ export class SalaryRecordsComponent implements OnInit {
       },
       error: () => this.snack.error('Delete failed'),
     });
+  }
+
+  get employeeOptions(): SelectOption[] {
+    return this.employees().map((e) => ({
+      value: e.id,
+      label: `${e.firstName} ${e.lastName}`,
+    }));
+  }
+
+  get payPeriodOptions(): SelectOption[] {
+    return this.payPeriods().map((p) => ({
+      value: p.id,
+      label: `${p.startDate} – ${p.endDate} (${p.status})`,
+    }));
   }
 }

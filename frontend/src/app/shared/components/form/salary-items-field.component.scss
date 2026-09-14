@@ -1,0 +1,28 @@
+.items-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.items-section label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.item-row app-form-field {
+  flex: 1;
+  min-width: 0;
+}

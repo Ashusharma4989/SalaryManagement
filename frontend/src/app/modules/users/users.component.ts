@@ -5,11 +5,9 @@ import { finalize } from 'rxjs/operators';
 
 import { ApiService, PagedResponse } from '../../shared/services/api.service';
 import { SnackbarService } from '../../shared/services/snack-bar.service';
-import { DataTableComponent, DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
-import { FormFieldComponent } from '../../shared/components/form/form-field.component';
-import { CardComponent } from '../../shared/components/card/card.component';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
+import { FormFieldComponent, SelectOption } from '../../shared/components/form/form-field.component';
+import { PageTemplateComponent } from '../../shared/components/page-template/page-template.component';
 import { UserDTO } from '../../shared/models';
 
 @Component({
@@ -18,11 +16,8 @@ import { UserDTO } from '../../shared/models';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    DataTableComponent,
-    ButtonComponent,
     FormFieldComponent,
-    CardComponent,
-    PageHeaderComponent,
+    PageTemplateComponent,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
@@ -57,7 +52,7 @@ export class UsersComponent implements OnInit {
     { label: '🗑', variant: 'danger', click: (r) => this.delete(r) },
   ];
 
-  protected readonly roleOptions = [
+  protected readonly roleOptions: SelectOption[] = [
     { value: 'ROLE_HR', label: 'HR User' },
     { value: 'ROLE_ADMIN', label: 'Admin' },
   ];

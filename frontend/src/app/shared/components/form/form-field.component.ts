@@ -2,6 +2,11 @@ import { Component, Input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 
+export interface SelectOption {
+  value: unknown;
+  label: string;
+}
+
 @Component({
   selector: 'app-form-field',
   standalone: true,
@@ -13,10 +18,12 @@ export class FormFieldComponent {
   @Input({ required: true }) form!: FormGroup;
   @Input({ required: true }) controlName!: string;
   @Input() label = '';
-  @Input() type: 'text' | 'email' | 'password' | 'number' | 'date' | 'textarea' = 'text';
+  @Input() type: 'text' | 'email' | 'password' | 'number' | 'date' | 'textarea' | 'select' = 'text';
   @Input() placeholder = '';
   @Input() autocomplete = 'off';
   @Input() rows = 3;
+  @Input() options: SelectOption[] = [];
+  @Input() compact = false;
 
   readonly control = computed(() => this.form.get(this.controlName));
 

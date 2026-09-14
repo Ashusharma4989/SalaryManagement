@@ -5,12 +5,11 @@ import { finalize } from 'rxjs/operators';
 
 import { ApiService, PagedResponse } from '../../shared/services/api.service';
 import { SnackbarService } from '../../shared/services/snack-bar.service';
-import { DataTableComponent, DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
+import { DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
 import { FormFieldComponent } from '../../shared/components/form/form-field.component';
-import { CardComponent } from '../../shared/components/card/card.component';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { PageTemplateComponent } from '../../shared/components/page-template/page-template.component';
 import { DepartmentDTO, EmployeeDTO } from '../../shared/models';
+import { SelectOption } from '../../shared/components/form/form-field.component';
 
 @Component({
   selector: 'app-employees',
@@ -18,11 +17,8 @@ import { DepartmentDTO, EmployeeDTO } from '../../shared/models';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    DataTableComponent,
-    ButtonComponent,
     FormFieldComponent,
-    CardComponent,
-    PageHeaderComponent,
+    PageTemplateComponent,
   ],
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.scss'],
@@ -165,7 +161,7 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  compareFn(a: unknown, b: unknown): boolean {
-    return a === b || (a != null && b != null && a === b);
+  get departmentOptions(): SelectOption[] {
+    return this.departments().map((d) => ({ value: d.id, label: d.name }));
   }
 }

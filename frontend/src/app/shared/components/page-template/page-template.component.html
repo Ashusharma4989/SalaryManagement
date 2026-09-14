@@ -1,0 +1,37 @@
+<app-page-header [title]="pageTitle" [subtitle]="pageDescription" />
+
+<app-card [title]="cardTitle">
+  <form
+    [formGroup]="pageForm"
+    (ngSubmit)="$event.preventDefault(); onSubmit()"
+    class="form-grid"
+  >
+    <ng-content select="[page-template-form]"></ng-content>
+
+    <div class="form-actions">
+      <button
+        app-button
+        variant="primary"
+        type="submit"
+        [loading]="saving"
+        [disabled]="!canSubmit"
+      >
+        {{ submitLabel }}
+      </button>
+    </div>
+  </form>
+</app-card>
+
+<app-card>
+  <app-data-table
+    [columns]="columns"
+    [rows]="rows"
+    [loading]="loading"
+    [total]="total"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [actions]="actions"
+    [rowKey]="rowKey"
+    (pageChange)="onPageChange($event)"
+  />
+</app-card>

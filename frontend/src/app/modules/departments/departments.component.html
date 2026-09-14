@@ -1,51 +1,26 @@
-<app-page-header title="Departments" />
-
-<app-card [title]="editingId() ? 'Edit Department' : 'Add New Department'">
-  <form
-    [formGroup]="form"
-    (ngSubmit)="submit()"
-    class="form-grid"
-  >
-    <app-form-field
-      [form]="form"
-      controlName="name"
-      label="Name"
-      type="text"
-      placeholder="e.g. Engineering"
-    />
-
-    <div class="form-actions">
-      <button
-        app-button
-        variant="primary"
-        type="submit"
-        [loading]="saving()"
-        [disabled]="form.invalid || saving()"
-      >
-        {{ editingId() ? 'Update' : 'Create' }}
-      </button>
-      <button
-        app-button
-        variant="ghost"
-        type="button"
-        (clicked)="add()"
-      >
-        New
-      </button>
-    </div>
-  </form>
-</app-card>
-
-<app-card>
-  <app-data-table
-    [columns]="columns"
-    [rows]="departments()"
-    [loading]="loading()"
-    [total]="total()"
-    [pageIndex]="pageIndex()"
-    [pageSize]="pageSize()"
-    [actions]="actions"
-    [rowKey]="'id'"
-    (pageChange)="onPageChange($event)"
+<app-page-template
+  pageTitle="Departments"
+  [pageForm]="form"
+  [saving]="saving()"
+  [submitLabel]="editingId() ? 'Update' : 'Create'"
+  cardTitle="Add New Department"
+  [columns]="columns"
+  [rows]="departments()"
+  [loading]="loading()"
+  [total]="total()"
+  [pageIndex]="pageIndex()"
+  [pageSize]="pageSize()"
+  [actions]="actions"
+  rowKey="id"
+  (formSubmit)="submit()"
+  (pageChange)="onPageChange($event)"
+>
+  <app-form-field
+    page-template-form
+    [form]="form"
+    controlName="name"
+    label="Name"
+    type="text"
+    placeholder="e.g. Engineering"
   />
-</app-card>
+</app-page-template>
