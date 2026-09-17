@@ -21,8 +21,10 @@ public class SalaryRecordController {
     private final SalaryRecordService service;
 
     @GetMapping
-    public ResponseEntity<Page<SalaryRecordDTO>> findAll(@PageableDefault(size = 50) Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<SalaryRecordDTO>> findAll(
+            @RequestParam(defaultValue = "") String search,
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(search, pageable));
     }
 
     @GetMapping("/employee/{employeeId}")

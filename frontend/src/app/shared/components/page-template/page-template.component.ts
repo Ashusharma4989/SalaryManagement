@@ -29,14 +29,23 @@ export class PageTemplateComponent<T = unknown> {
   readonly rowKey = input('id');
   readonly actions = input<any[]>([]);
 
+  readonly searchable = input(true);
+  readonly searchTerm = input('');
+  readonly sortField = input<string | null>(null);
+  readonly sortDirection = input<'asc' | 'desc'>('asc');
+
   readonly formExpanded = signal(false);
 
   private readonly _formInvalid = signal(true);
 
   readonly canSubmit = computed(() => !this._formInvalid() && !this.saving());
+  readonly isExpanded = computed(() => this.pageForm() !== null);
 
   @Output() formSubmit = new EventEmitter<void>();
   @Output() pageChange = new EventEmitter<{ page: number; size: number }>();
+  @Output() sort = new EventEmitter<{ field: string; direction: 'asc' | 'desc' }>();
+  @Output() search = new EventEmitter<string>();
+  @Output() toggleFormEvent = new EventEmitter<void>();
 
   constructor() {
     effect(() => {
@@ -58,7 +67,16 @@ export class PageTemplateComponent<T = unknown> {
     this.pageChange.emit({ page, size });
   }
 
+  onSort(field: string, direction: 'asc' | 'desc'): void {
+    this.sort.emit({ field, direction });
+  }
+
+  onSearch(term: string): void {
+    this.search.emit(term);
+  }
+
   toggleForm(): void {
     this.formExpanded.update((v) => !v);
+    this.toggleFormEvent.emit();
   }
 }

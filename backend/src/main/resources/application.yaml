@@ -25,9 +25,12 @@ management:
 
 app:
   jwt:
-    # Set APP_JWT_SECRET env var in production. Empty = random per-startup (dev only).
-    secret: ${APP_JWT_SECRET:}
+    # Set APP_JWT_SECRET env var in production. Default is a stable dev-only secret.
+    secret: ${APP_JWT_SECRET:dev-secret-key-for-testing-only-not-for-production-use}
     expiration-ms: 86400000
   ollama:
     base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
     model: ${OLLAMA_MODEL:llama3.2:3b}
+  session:
+    ttl-seconds: 3600
+    cleanup-interval-ms: 600000

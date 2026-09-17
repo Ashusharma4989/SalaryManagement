@@ -29,6 +29,9 @@ export class DepartmentsComponent implements OnInit {
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
+  protected readonly searchTerm = signal('');
+  protected readonly sortField = signal<string | null>(null);
+  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
   protected form: FormGroup;
 
@@ -75,6 +78,8 @@ export class DepartmentsComponent implements OnInit {
       .list<DepartmentDTO>('/api/v1/departments', {
         page: this.pageIndex(),
         size: this.pageSize(),
+        search: this.searchTerm(),
+        sort: this.sortField() ? `${this.sortField()},${this.sortDirection()}` : undefined,
       })
       .pipe(
         finalize(() => {
@@ -98,6 +103,18 @@ export class DepartmentsComponent implements OnInit {
   onPageChange({ page, size }: { page: number; size: number }): void {
     this.pageIndex.set(page);
     this.pageSize.set(size);
+    this.load();
+  }
+
+  onSort(field: string, direction: 'asc' | 'desc'): void {
+    this.sortField.set(field);
+    this.sortDirection.set(direction);
+    this.load();
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm.set(term);
+    this.pageIndex.set(0);
     this.load();
   }
 

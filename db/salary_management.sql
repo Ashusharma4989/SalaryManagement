@@ -132,6 +132,46 @@ CREATE INDEX IF NOT EXISTS idx_chat_history_user ON chat_history(user_id);
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE chat_history TO {DB_USERNAME};
 GRANT USAGE, SELECT ON SEQUENCE chat_history_id_seq TO {DB_USERNAME};
 
+-- Audit log: tracks all CRUD operations on key entities
+CREATE TABLE IF NOT EXISTS audit_log (
+  id BIGSERIAL PRIMARY KEY,
+  entity_type TEXT NOT NULL,
+  entity_id BIGINT,
+  action TEXT NOT NULL,
+  username TEXT,
+  old_values TEXT,
+  new_values TEXT,
+  details TEXT,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON audit_log(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_username ON audit_log(username);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at);
+
+-- Grants for audit_log table
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE audit_log TO {DB_USERNAME};
+GRANT USAGE, SELECT ON SEQUENCE audit_log_id_seq TO {DB_USERNAME};
+
+-- Sessions: database-backed session management (<app-token> stores session_id)
+CREATE TABLE IF NOT EXISTS sessions (
+  session_id VARCHAR(128) PRIMARY KEY,
+  username TEXT NOT NULL,
+  role TEXT NOT NULL,
+  ip_address TEXT,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  expires_at timestamptz NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_username ON sessions(username);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+
+-- Grants for sessions table
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE sessions TO {DB_USERNAME};
+GRANT USAGE, SELECT ON SEQUENCE sessions_id_seq TO {DB_USERNAME};
+
 -- Dev seed: one admin user admin / admin (ROLE_ADMIN).
 -- The password_hash is a BCrypt digest of the literal string "admin".
 -- Remove or re-hash this row before running in production.

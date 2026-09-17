@@ -11,8 +11,14 @@
   [pageSize]="pageSize()"
   [actions]="actions"
   rowKey="id"
+  [searchable]="true"
+  [searchTerm]="searchTerm()"
+  [sortField]="sortField()"
+  [sortDirection]="sortDirection()"
   (formSubmit)="submit()"
   (pageChange)="onPageChange($event)"
+  (sort)="onSort($event.field, $event.direction)"
+  (search)="onSearch($event)"
 >
   <app-form-field
     page-template-form

@@ -19,8 +19,10 @@ public class DepartmentController {
     private final DepartmentService service;
 
     @GetMapping
-    public ResponseEntity<Page<DepartmentDTO>> findAll(@PageableDefault(size = 50) Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<DepartmentDTO>> findAll(
+            @RequestParam(defaultValue = "") String search,
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(search, pageable));
     }
 
     @GetMapping("/{id}")

@@ -20,8 +20,10 @@ public class EmployeeController {
     private final EmployeeService service;
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeDTO>> findAll(@PageableDefault(size = 50) Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<EmployeeDTO>> findAll(
+            @RequestParam(defaultValue = "") String search,
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(search, pageable));
     }
 
     @GetMapping("/department/{departmentId}")

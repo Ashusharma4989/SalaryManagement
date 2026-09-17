@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, computed, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Output, computed, input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../button/button.component';
 
@@ -42,6 +42,16 @@ export class DataTableComponent<T = unknown> {
   readonly actions = input<DataTableRowAction<T>[]>([]);
   readonly emptyMessage = input('No records found.');
 
+  readonly searchable = input(true);
+  readonly searchTerm = input('');
+  readonly sortField = input<string | null>(null);
+  readonly sortDirection = input<'asc' | 'desc'>('asc');
+
+  @Output() pageChange = new EventEmitter<{ page: number; size: number }>();
+  @Output() rowClick = new EventEmitter<T>();
+  @Output() sort = new EventEmitter<{ field: string; direction: 'asc' | 'desc' }>();
+  @Output() search = new EventEmitter<string>();
+
   readonly isLoading = computed(() => this.rows() === null);
   readonly hasData = computed(() => {
     const r = this.rows();
@@ -60,8 +70,17 @@ export class DataTableComponent<T = unknown> {
     this.pageIndex() + 1 >= Math.ceil(this.total() / this.pageSize())
   );
 
-  @Output() pageChange = new EventEmitter<{ page: number; size: number }>();
-  @Output() rowClick = new EventEmitter<T>();
+  onSort(field: string, sortable?: boolean): void {
+    if (!sortable) return;
+    const currentDir = this.sortDirection();
+    const direction: 'asc' | 'desc' = currentDir === 'asc' ? 'desc' : 'asc';
+    this.sort.emit({ field, direction });
+  }
+
+  getSortIcon(field: string): string {
+    if (this.sortField() !== field) return '⇅';
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
 
   trackByFn(index: number, row: T): string | number {
     const rk = this.rowKey();
@@ -129,5 +148,10 @@ export class DataTableComponent<T = unknown> {
     if (this.rowClickable()) {
       this.rowClick.emit(row);
     }
+  }
+
+  onSearchInput(event: Event): void {
+    const term = (event.target as HTMLInputElement)?.value ?? '';
+    this.search.emit(term);
   }
 }

@@ -38,8 +38,11 @@ public class SalaryRecordService {
     private final UserRepository userRepository;
     private final EntityMapper mapper;
 
-    public Page<SalaryRecordDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toSalaryRecordDTO);
+    public Page<SalaryRecordDTO> findAll(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable).map(mapper::toSalaryRecordDTO);
+        }
+        return repository.search(search, pageable).map(mapper::toSalaryRecordDTO);
     }
 
     public SalaryRecordDTO findById(Long id) {

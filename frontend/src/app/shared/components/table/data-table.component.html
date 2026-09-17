@@ -1,4 +1,17 @@
 <div class="data-table" [class.is-loading]="isLoading()">
+  <div class="dt-toolbar" *ngIf="searchable()">
+    <div class="dt-toolbar-left"></div>
+    <div class="dt-toolbar-right">
+      <input
+        type="text"
+        class="dt-search"
+        placeholder="Search..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+  </div>
+
   @if (isLoading()) {
     <div class="loading-state">
       <span class="spinner-inline"></span>
@@ -14,9 +27,11 @@
               [ngClass]="col.class"
               [style.width]="col.width"
               [class.sortable]="col.sortable"
-              >{{ col.label }}
+              (click)="onSort(col.key, col.sortable)"
+              [title]="col.sortable ? 'Sortable' : null"
+            >{{ col.label }}
               @if (col.sortable) {
-                <span class="sort-icon" title="Sortable">↕</span>
+                <span class="sort-icon">{{ getSortIcon(col.key) }}</span>
               }
             </th>
           }

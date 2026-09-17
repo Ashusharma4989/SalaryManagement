@@ -29,6 +29,9 @@ export class PayPeriodsComponent implements OnInit {
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
+  protected readonly searchTerm = signal('');
+  protected readonly sortField = signal<string | null>(null);
+  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
   protected form: FormGroup;
 
@@ -68,6 +71,8 @@ export class PayPeriodsComponent implements OnInit {
       .list<PayPeriodDTO>('/api/v1/pay-periods', {
         page: this.pageIndex(),
         size: this.pageSize(),
+        search: this.searchTerm(),
+        sort: this.sortField() ? `${this.sortField()},${this.sortDirection()}` : undefined,
       })
       .pipe(
         finalize(() => {
@@ -94,6 +99,18 @@ export class PayPeriodsComponent implements OnInit {
     this.load();
   }
 
+  onSort(field: string, direction: 'asc' | 'desc'): void {
+    this.sortField.set(field);
+    this.sortDirection.set(direction);
+    this.load();
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm.set(term);
+    this.pageIndex.set(0);
+    this.load();
+  }
+
   get actions(): DataTableRowAction<PayPeriodDTO>[] {
     return [
       { label: '✏', variant: 'ghost', click: (r) => this.edit(r) },
@@ -115,9 +132,9 @@ export class PayPeriodsComponent implements OnInit {
 
   get columns(): DataTableColumn[] {
     return [
-      { key: 'startDate', label: 'Start Date', type: 'date' },
-      { key: 'endDate', label: 'End Date', type: 'date' },
-      { key: 'status', label: 'Status', type: 'text' },
+      { key: 'startDate', label: 'Start Date', type: 'date', sortable: true },
+      { key: 'endDate', label: 'End Date', type: 'date', sortable: true },
+      { key: 'status', label: 'Status', type: 'text', sortable: true },
     ];
   }
 

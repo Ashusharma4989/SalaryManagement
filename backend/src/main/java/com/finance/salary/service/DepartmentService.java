@@ -22,8 +22,11 @@ public class DepartmentService {
     private final DepartmentRepository repository;
     private final EntityMapper mapper;
 
-    public Page<DepartmentDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDepartmentDTO);
+    public Page<DepartmentDTO> findAll(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable).map(mapper::toDepartmentDTO);
+        }
+        return repository.findByNameContainingIgnoreCase(search, pageable).map(mapper::toDepartmentDTO);
     }
 
     public DepartmentDTO findById(Long id) {

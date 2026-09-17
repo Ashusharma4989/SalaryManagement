@@ -11,7 +11,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly tokenKey = 'auth_token';
+  private readonly tokenKey = 'auth_sid';
   private readonly userKey = 'auth_user';
   private readonly roleKey = 'auth_role';
 
@@ -23,10 +23,7 @@ export class AuthService {
   readonly username = this._user.asReadonly();
   readonly role = this._role.asReadonly();
 
-  readonly isAuthenticated = computed(() => {
-    const t = this._token();
-    return !!t && !this.isTokenExpired(t);
-  });
+  readonly isAuthenticated = computed(() => !!this._token());
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -46,6 +43,18 @@ export class AuthService {
   }
 
   logout() {
+    const token = this._token();
+    if (token) {
+      this.http.post('/api/v1/auth/logout', {}).subscribe({
+        next: () => this.clearAuth(),
+        error: () => this.clearAuth(),
+      });
+    } else {
+      this.clearAuth();
+    }
+  }
+
+  private clearAuth(): void {
     this._token.set(null);
     this._user.set(null);
     this._role.set(null);
@@ -65,34 +74,9 @@ export class AuthService {
     );
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload?.exp;
-      if (typeof exp !== 'number') {
-        return false;
-      }
-      return Date.now() >= exp * 1000;
-    } catch {
-      return true;
-    }
-  }
-
   private read(key: string): string | null {
     return typeof localStorage !== 'undefined'
       ? localStorage.getItem(key)
       : null;
-  }
-
-  private write(key: string, value: string): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(key, value);
-    }
-  }
-
-  private remove(key: string): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(key);
-    }
   }
 }

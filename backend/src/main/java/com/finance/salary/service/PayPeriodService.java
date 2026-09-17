@@ -23,8 +23,11 @@ public class PayPeriodService {
     private final SalaryRecordRepository salaryRecordRepository;
     private final EntityMapper mapper;
 
-    public Page<PayPeriodDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toPayPeriodDTO);
+    public Page<PayPeriodDTO> findAll(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable).map(mapper::toPayPeriodDTO);
+        }
+        return repository.search(search, pageable).map(mapper::toPayPeriodDTO);
     }
 
     public PayPeriodDTO findById(Long id) {

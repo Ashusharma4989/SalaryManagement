@@ -31,13 +31,16 @@ export class EmployeesComponent implements OnInit {
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
+  protected readonly searchTerm = signal('');
+  protected readonly sortField = signal<string | null>(null);
+  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
   protected form: FormGroup;
 
   protected readonly columns: DataTableColumn[] = [
     { key: 'employeeNumber', label: 'Emp. No.', sortable: true, type: 'text' },
-    { key: 'firstName', label: 'First Name', type: 'text' },
-    { key: 'lastName', label: 'Last Name', type: 'text' },
+    { key: 'firstName', label: 'First Name', sortable: true, type: 'text' },
+    { key: 'lastName', label: 'Last Name', sortable: true, type: 'text' },
     { key: 'email', label: 'Email', type: 'text' },
     { key: 'departmentName', label: 'Department', type: 'text' },
     { key: 'location', label: 'Location', type: 'text' },
@@ -90,6 +93,8 @@ export class EmployeesComponent implements OnInit {
       .list<EmployeeDTO>('/api/v1/employees', {
         page: this.pageIndex(),
         size: this.pageSize(),
+        search: this.searchTerm(),
+        sort: this.sortField() ? `${this.sortField()},${this.sortDirection()}` : undefined,
       })
       .pipe(
         finalize(() => {
@@ -125,6 +130,18 @@ export class EmployeesComponent implements OnInit {
   onPageChange({ page, size }: { page: number; size: number }): void {
     this.pageIndex.set(page);
     this.pageSize.set(size);
+    this.load();
+  }
+
+  onSort(field: string, direction: 'asc' | 'desc'): void {
+    this.sortField.set(field);
+    this.sortDirection.set(direction);
+    this.load();
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm.set(term);
+    this.pageIndex.set(0);
     this.load();
   }
 

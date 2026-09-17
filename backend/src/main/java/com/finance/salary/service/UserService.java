@@ -28,13 +28,22 @@ public class UserService {
     private final EntityMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
-    public Page<UserDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toUserDTO);
+    public Page<UserDTO> findAll(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable).map(mapper::toUserDTO);
+        }
+        return repository.search(search, pageable).map(mapper::toUserDTO);
     }
 
     public UserDTO findById(Long id) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        return mapper.toUserDTO(user);
+    }
+
+    public UserDTO findByUsername(String username) {
+        User user = repository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         return mapper.toUserDTO(user);
     }
 

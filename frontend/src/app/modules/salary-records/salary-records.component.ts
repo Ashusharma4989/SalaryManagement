@@ -43,6 +43,9 @@ export class SalaryRecordsComponent implements OnInit {
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
+  protected readonly searchTerm = signal('');
+  protected readonly sortField = signal<string | null>(null);
+  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
   protected form: FormGroup;
 
@@ -95,6 +98,8 @@ export class SalaryRecordsComponent implements OnInit {
       .list<SalaryRecordDTO>('/api/v1/salary-records', {
         page: this.pageIndex(),
         size: this.pageSize(),
+        search: this.searchTerm(),
+        sort: this.sortField() ? `${this.sortField()},${this.sortDirection()}` : undefined,
       })
       .pipe(
         finalize(() => {
@@ -137,10 +142,9 @@ export class SalaryRecordsComponent implements OnInit {
   }
 
   loadCurrentUserId(): void {
-    this.api.list<UserDTO>('/api/v1/users').subscribe({
-      next: (res: PagedResponse<UserDTO>) => {
-        const me = res.content.find((u) => u.username === this.auth.username());
-        this.currentUserId.set(me?.id ?? null);
+    this.api.get<UserDTO>('/api/v1/users/me').subscribe({
+      next: (user: UserDTO) => {
+        this.currentUserId.set(user.id ?? null);
       },
       error: () => {
         this.currentUserId.set(null);
@@ -151,6 +155,18 @@ export class SalaryRecordsComponent implements OnInit {
   onPageChange({ page, size }: { page: number; size: number }): void {
     this.pageIndex.set(page);
     this.pageSize.set(size);
+    this.load();
+  }
+
+  onSort(field: string, direction: 'asc' | 'desc'): void {
+    this.sortField.set(field);
+    this.sortDirection.set(direction);
+    this.load();
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm.set(term);
+    this.pageIndex.set(0);
     this.load();
   }
 
@@ -199,11 +215,11 @@ export class SalaryRecordsComponent implements OnInit {
           return pp ? `${pp.startDate} – ${pp.endDate}` : String(v ?? '');
         },
       },
-      { key: 'baseSalary', label: 'Base', type: 'currency' },
-      { key: 'gross', label: 'Gross', type: 'currency' },
-      { key: 'totalDeductions', label: 'Deductions', type: 'currency' },
-      { key: 'net', label: 'Net', type: 'currency' },
-      { key: 'status', label: 'Status', type: 'text' },
+      { key: 'baseSalary', label: 'Base', type: 'currency', sortable: true },
+      { key: 'gross', label: 'Gross', type: 'currency', sortable: true },
+      { key: 'totalDeductions', label: 'Deductions', type: 'currency', sortable: true },
+      { key: 'net', label: 'Net', type: 'currency', sortable: true },
+      { key: 'status', label: 'Status', type: 'text', sortable: true },
     ];
   }
 

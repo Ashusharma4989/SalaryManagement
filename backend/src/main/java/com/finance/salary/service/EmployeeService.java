@@ -26,8 +26,11 @@ public class EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final EntityMapper mapper;
 
-    public Page<EmployeeDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toEmployeeDTO);
+    public Page<EmployeeDTO> findAll(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable).map(mapper::toEmployeeDTO);
+        }
+        return repository.search(search, pageable).map(mapper::toEmployeeDTO);
     }
 
     public List<EmployeeDTO> findByDepartment(Long departmentId) {

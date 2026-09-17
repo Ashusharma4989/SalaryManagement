@@ -19,8 +19,10 @@ public class PayPeriodController {
     private final PayPeriodService service;
 
     @GetMapping
-    public ResponseEntity<Page<PayPeriodDTO>> findAll(@PageableDefault(size = 50) Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<PayPeriodDTO>> findAll(
+            @RequestParam(defaultValue = "") String search,
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(search, pageable));
     }
 
     @GetMapping("/{id}")

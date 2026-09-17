@@ -41,7 +41,13 @@
       [pageSize]="pageSize()"
       [actions]="actions()"
       [rowKey]="rowKey()"
+      [searchable]="searchable()"
+      [searchTerm]="searchTerm()"
+      [sortField]="sortField()"
+      [sortDirection]="sortDirection()"
       (pageChange)="onPageChange($event)"
+      (sort)="onSort($event.field, $event.direction)"
+      (search)="onSearch($event)"
     />
   </app-card>
 </section>
