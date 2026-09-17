@@ -83,7 +83,7 @@ export class SalaryItemsFieldComponent {
     this.items.push(this.fb.group({
       name: ['', Validators.required],
       type: ['EARNING', Validators.required],
-      amount: ['', [Validators.required, Validators.min(0.01)]],
+      amount: ['', [Validators.required, Validators.min(0.01), Validators.pattern(/^[0-9]+(\.[0-9]+)?$/)]],
     }));
   }
 

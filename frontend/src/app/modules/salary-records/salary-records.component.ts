@@ -55,7 +55,7 @@ export class SalaryRecordsComponent implements OnInit {
     this.form = this.fb.group({
       employeeId: [null, Validators.required],
       payPeriodId: [null, Validators.required],
-      baseSalary: ['', [Validators.required, Validators.min(0.01)]],
+      baseSalary: ['', [Validators.required, Validators.min(0.01), Validators.pattern(/^[0-9]+(\.[0-9]+)?$/)]],
       currencyCode: ['USD', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
       salaryItems: this.fb.array([]),
     });
@@ -214,7 +214,7 @@ export class SalaryRecordsComponent implements OnInit {
       this.items.push(this.fb.group({
         name: [item.name, Validators.required],
         type: [item.type, Validators.required],
-        amount: [item.amount, [Validators.required, Validators.min(0.01)]],
+        amount: [item.amount, [Validators.required, Validators.min(0.01), Validators.pattern(/^[0-9]+(\.[0-9]+)?$/)]],
       }));
     });
     this.form.patchValue({

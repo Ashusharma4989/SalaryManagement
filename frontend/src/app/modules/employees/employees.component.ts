@@ -60,7 +60,7 @@ export class EmployeesComponent implements OnInit {
       email: ['', [Validators.email]],
       departmentId: [null],
       location: [''],
-      currencyCode: ['', [Validators.minLength(3), Validators.maxLength(3)]],
+      currencyCode: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
       hireDate: [''],
     });
   }

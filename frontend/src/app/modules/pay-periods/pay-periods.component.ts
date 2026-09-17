@@ -40,7 +40,7 @@ export class PayPeriodsComponent implements OnInit {
     this.form = this.fb.group({
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      status: ['OPEN'],
+      status: ['OPEN', Validators.required],
     });
   }
 
