@@ -9,17 +9,18 @@
       <span class="menu-icon">≡</span>
     </button>
     <span class="app-icon" aria-hidden="true">💼</span>
+    <span class="app-name">Acme</span>
     <span class="separator"></span>
     <span class="app-name">Salary Management</span>
   </div>
 
   @if (auth.isAuthenticated()) {
-    <div class="header-right">
-      <span class="user-info">
-        <span class="user-name">{{ auth.username() }}</span>
-        <span class="user-role">{{ auth.role() }}</span>
-      </span>
-      <button
+      <div class="header-right">
+        <span class="user-info">
+          <span class="user-icon" aria-hidden="true">&#128100;</span>
+          <span class="user-name">{{ auth.username() }}</span>
+        </span>
+        <button
         app-button
         variant="ghost"
         size="sm"

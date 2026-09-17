@@ -1,0 +1,105 @@
+<div class="chatbot-wrapper">
+  <button
+    class="chatbot-toggle"
+    (click)="toggleChat()"
+    [attr.aria-label]="isOpen() ? 'Close chat' : 'Open chat'"
+    type="button"
+  >
+    💬
+  </button>
+
+  @if (isOpen()) {
+    <div class="chatbot-panel" (click)="$event.stopPropagation()">
+      <div class="chatbot-header">
+        <div class="chatbot-header-info">
+          <div class="chatbot-avatar bot-avatar">
+            &#129304;
+          </div>
+          <h3>SalaryBot</h3>
+        </div>
+        <div class="chatbot-header-actions">
+          <button
+            class="chatbot-clear"
+            (click)="clearHistory()"
+            [attr.aria-label]="'Clear chat history'"
+            type="button"
+            title="Clear chat history"
+          >
+            &#129864;
+          </button>
+          <button
+            class="chatbot-close"
+            (click)="closeChat()"
+            [attr.aria-label]="'Close chat'"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <div class="chatbot-messages" #messagesContainer>
+        @if (historyLoading()) {
+          <div class="message bot">
+            <div class="chatbot-avatar bot-avatar">
+              &#129304;
+            </div>
+            <div class="message-content">
+              <div class="message-text">Loading chat history...</div>
+            </div>
+          </div>
+        }
+        @for (msg of messages(); track $index) {
+          <div
+            class="message"
+            [class.user]="msg.sender === 'user'"
+            [class.bot]="msg.sender === 'bot'"
+          >
+            <div
+              class="chatbot-avatar"
+              [class.user-avatar]="msg.sender === 'user'"
+              [class.bot-avatar]="msg.sender === 'bot'"
+            >
+              {{ msg.sender === 'user' ? '&#128100;' : '&#129304;' }}
+            </div>
+            <div class="message-content">
+              <div class="message-text">{{ msg.text }}</div>
+              <div class="message-timestamp">{{ formatTime(msg.timestamp) }}</div>
+            </div>
+          </div>
+        }
+        @if (loading()) {
+          <div class="message bot typing-indicator">
+            <div class="chatbot-avatar bot-avatar">
+              &#129304;
+            </div>
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="chatbot-input">
+        <input
+          type="text"
+          placeholder="Ask about salary..."
+          [value]="inputText()"
+          (input)="onInputChange($any($event).target.value)"
+          (keydown.enter)="sendMessage()"
+          [disabled]="loading()"
+        />
+        <button
+          class="send-btn"
+          (click)="sendMessage()"
+          [disabled]="!canSend"
+          type="button"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  }
+</div>

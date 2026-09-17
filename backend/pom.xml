@@ -110,6 +110,12 @@
 			<artifactId>spring-boot-starter-aspectj</artifactId>
 		</dependency>
 
+		<!-- Jackson for JSON serialization (used by ChatbotService) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

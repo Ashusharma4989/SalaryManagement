@@ -4,6 +4,7 @@ import { HeaderComponent } from './header/header.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { SnackbarComponent } from '../shared/components/snack-bar/snack-bar.component';
+import { ChatbotComponent } from '../shared/components/chatbot/chatbot.component';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -14,6 +15,7 @@ import { AuthService } from '../auth/auth.service';
     NavbarComponent,
     FooterComponent,
     SnackbarComponent,
+    ChatbotComponent,
     RouterOutlet,
   ],
   templateUrl: './shell.component.html',

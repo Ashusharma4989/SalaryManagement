@@ -114,3 +114,27 @@ GRANT SELECT, USAGE ON ALL SEQUENCES IN SCHEMA public TO {DB_USERNAME};
 -- Default privileges for future objects
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {DB_USERNAME};
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE ON SEQUENCES TO {DB_USERNAME};
+
+-- Chat history: stores chat messages as JSON per user
+CREATE TABLE IF NOT EXISTS chat_history (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  messages TEXT,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  CONSTRAINT fk_chat_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT uk_chat_history_user UNIQUE (user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_history_user ON chat_history(user_id);
+
+-- Grants for chat_history table
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE chat_history TO {DB_USERNAME};
+GRANT USAGE, SELECT ON SEQUENCE chat_history_id_seq TO {DB_USERNAME};
+
+-- Dev seed: one admin user admin / admin (ROLE_ADMIN).
+-- The password_hash is a BCrypt digest of the literal string "admin".
+-- Remove or re-hash this row before running in production.
+INSERT INTO users (username, password_hash, role)
+SELECT 'admin', '$2a$10$3EW/Rmp13koG8giQqtzYwOClJiAq5VRdTkZTktdlDzGMobsBzPA6G', 'ROLE_ADMIN'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin');

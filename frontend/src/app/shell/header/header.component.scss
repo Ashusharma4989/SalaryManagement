@@ -62,22 +62,19 @@
 
 .user-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.1rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.user-icon {
+  font-size: 1.2rem;
 }
 
 .user-name {
   font-size: 0.85rem;
   font-weight: 600;
   color: #e5e7eb;
-}
-
-.user-role {
-  font-size: 0.72rem;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
 
 .login-link {

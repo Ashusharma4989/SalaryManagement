@@ -28,3 +28,6 @@ app:
     # Set APP_JWT_SECRET env var in production. Empty = random per-startup (dev only).
     secret: ${APP_JWT_SECRET:}
     expiration-ms: 86400000
+  ollama:
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_MODEL:llama3.2:3b}
