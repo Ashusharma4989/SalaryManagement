@@ -1,13 +1,11 @@
 <app-page-template
   pageTitle="Pay Periods"
-  pageDescription="Define and manage pay periods."
   cardTitle="Add New Pay Period"
   [pageForm]="form"
   [saving]="saving()"
   [submitLabel]="editingId() ? 'Update' : 'Create'"
   [columns]="columns"
   [rows]="periods()"
-  [loading]="loading()"
   [total]="total()"
   [pageIndex]="pageIndex()"
   [pageSize]="pageSize()"

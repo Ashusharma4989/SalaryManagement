@@ -24,9 +24,8 @@ import { SelectOption } from '../../shared/components/form/form-field.component'
   styleUrls: ['./employees.component.scss'],
 })
 export class EmployeesComponent implements OnInit {
-  protected readonly employees = signal<EmployeeDTO[]>([]);
+  protected readonly employees = signal<EmployeeDTO[] | null>(null);
   protected readonly departments = signal<DepartmentDTO[]>([]);
-  protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
   protected readonly total = signal(0);
@@ -72,25 +71,54 @@ export class EmployeesComponent implements OnInit {
   }
 
   load(): void {
-    this.loading.set(true);
-    this.api.list<EmployeeDTO>('/api/v1/employees', {
-      page: this.pageIndex(),
-      size: this.pageSize(),
-    }).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: PagedResponse<EmployeeDTO>) => {
-        this.employees.set(res.content);
-        this.total.set(res.totalElements);
-      },
-      error: () => this.snack.error('Failed to load employees'),
-    });
+    this.employees.set(null);
+    let settled = false;
+
+    const minDisplay = setTimeout(() => {
+      if (!settled && this.employees() === null) {
+        this.employees.set([]);
+      }
+    }, 300);
+
+    const safety = setTimeout(() => {
+      if (!settled && this.employees() === null) {
+        this.employees.set([]);
+      }
+    }, 5000);
+
+    this.api
+      .list<EmployeeDTO>('/api/v1/employees', {
+        page: this.pageIndex(),
+        size: this.pageSize(),
+      })
+      .pipe(
+        finalize(() => {
+          settled = true;
+          clearTimeout(minDisplay);
+          clearTimeout(safety);
+          if (this.employees() === null) {
+            this.employees.set([]);
+          }
+        })
+      )
+      .subscribe({
+        next: (res: PagedResponse<EmployeeDTO>) => {
+          this.employees.set(res.content);
+          this.total.set(res.totalElements);
+        },
+        error: () => this.snack.error('Failed to load employees'),
+      });
   }
 
   loadDepartments(): void {
-    this.api.get<DepartmentDTO[]>('/api/v1/departments').subscribe({
-      next: (list) => this.departments.set(list),
-      error: () => this.departments.set([]),
+    this.api.list<DepartmentDTO>('/api/v1/departments').subscribe({
+      next: (res: PagedResponse<DepartmentDTO>) => {
+        this.departments.set(res.content);
+      },
+      error: () => {
+        this.departments.set([]);
+        this.snack.error('Failed to load departments');
+      },
     });
   }
 
@@ -162,6 +190,8 @@ export class EmployeesComponent implements OnInit {
   }
 
   get departmentOptions(): SelectOption[] {
-    return this.departments().map((d) => ({ value: d.id, label: d.name }));
+    const deps = this.departments();
+    if (!Array.isArray(deps)) return [];
+    return deps.map((d) => ({ value: d.id, label: d.name }));
   }
 }

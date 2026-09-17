@@ -1,21 +1,15 @@
-<div class="data-table" [class.is-loading]="loading">
-  @if (loading) {
-    <table class="dt-table">
-      <tbody>
-        @for (skeleton of [0, 1, 2]; track $index) {
-          <tr>
-            <td colspan="99"><div class="skeleton-row"></div></td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  } @else if (rows.length === 0) {
-    <div class="empty-state">{{ emptyMessage }}</div>
+<div class="data-table" [class.is-loading]="isLoading()">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <span class="spinner-inline"></span>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">{{ emptyMessage() }}</div>
   } @else {
     <table class="dt-table">
       <thead>
         <tr>
-          @for (col of columns; track col.key) {
+          @for (col of columns(); track col.key) {
             <th
               [ngClass]="col.class"
               [style.width]="col.width"
@@ -26,20 +20,20 @@
               }
             </th>
           }
-          @if (actions.length) {
+          @if (actions().length) {
             <th class="actions-head"></th>
           }
         </tr>
       </thead>
       <tbody>
-        @for (row of rows; track trackByFn($index, row)) {
-          <tr (click)="onRowClick(row)" [class.clickable]="rowClickable">
-            @for (col of columns; track col.key) {
+        @for (row of rows(); track trackByFn($index, row)) {
+          <tr (click)="onRowClick(row)" [class.clickable]="rowClickable()">
+            @for (col of columns(); track col.key) {
               <td [ngClass]="col.class">{{ formatValue(col, row) }}</td>
             }
-            @if (actions.length) {
+            @if (actions().length) {
               <td class="actions-cell" (click)="$event.stopPropagation()">
-                @for (a of actions; track a.label) {
+                @for (a of actions(); track a.label) {
                   @if (isVisible(a, row)) {
                     <button
                       app-button
@@ -57,9 +51,9 @@
       </tbody>
     </table>
 
-    @if (pageSizeOptions.length) {
+    @if (pageSizeOptions().length) {
       <div class="dt-footer">
-        <div class="dt-info">{{ total }} record(s)</div>
+        <div class="dt-info">{{ total() }} record(s)</div>
         <div class="dt-pagination">
           <button
             app-button
@@ -78,8 +72,8 @@
             (clicked)="next()"
             >Next</button
           >
-          <select (change)="changeSize($event)" [value]="pageSize">
-            @for (s of pageSizeOptions; track s) {
+          <select (change)="changeSize($event)" [value]="pageSize()">
+            @for (s of pageSizeOptions(); track s) {
               <option [value]="s">{{ s }}</option>
             }
           </select>

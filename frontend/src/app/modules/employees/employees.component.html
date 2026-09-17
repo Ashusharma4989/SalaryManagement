@@ -1,13 +1,11 @@
 <app-page-template
   pageTitle="Employees"
-  pageDescription="Manage employee records."
   cardTitle="Add New Employee"
   [pageForm]="form"
   [saving]="saving()"
   [submitLabel]="editingId() ? 'Update' : 'Create'"
   [columns]="columns"
   [rows]="employees()"
-  [loading]="loading()"
   [total]="total()"
   [pageIndex]="pageIndex()"
   [pageSize]="pageSize()"

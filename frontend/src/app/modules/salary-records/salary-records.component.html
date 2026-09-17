@@ -1,13 +1,11 @@
 <app-page-template
   pageTitle="Salary Records"
-  pageDescription="Create and manage salary records with earning/deduction items."
   cardTitle="Add New Salary Record"
   [pageForm]="form"
   [saving]="saving()"
   [submitLabel]="editingId() ? 'Update' : 'Create'"
   [columns]="columns"
   [rows]="records()"
-  [loading]="loading()"
   [total]="total()"
   [pageIndex]="pageIndex()"
   [pageSize]="pageSize()"

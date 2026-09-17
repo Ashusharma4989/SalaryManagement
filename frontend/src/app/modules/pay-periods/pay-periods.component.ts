@@ -23,8 +23,7 @@ import { PayPeriodDTO } from '../../shared/models';
   styleUrls: ['./pay-periods.component.scss'],
 })
 export class PayPeriodsComponent implements OnInit {
-  protected readonly periods = signal<PayPeriodDTO[]>([]);
-  protected readonly loading = signal(false);
+  protected readonly periods = signal<PayPeriodDTO[] | null>(null);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
   protected readonly total = signal(0);
@@ -50,19 +49,43 @@ export class PayPeriodsComponent implements OnInit {
   }
 
   load(): void {
-    this.loading.set(true);
-    this.api.list<PayPeriodDTO>('/api/v1/pay-periods', {
-      page: this.pageIndex(),
-      size: this.pageSize(),
-    }).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: PagedResponse<PayPeriodDTO>) => {
-        this.periods.set(res.content);
-        this.total.set(res.totalElements);
-      },
-      error: () => this.snack.error('Failed to load pay periods'),
-    });
+    this.periods.set(null);
+    let settled = false;
+
+    const minDisplay = setTimeout(() => {
+      if (!settled && this.periods() === null) {
+        this.periods.set([]);
+      }
+    }, 300);
+
+    const safety = setTimeout(() => {
+      if (!settled && this.periods() === null) {
+        this.periods.set([]);
+      }
+    }, 5000);
+
+    this.api
+      .list<PayPeriodDTO>('/api/v1/pay-periods', {
+        page: this.pageIndex(),
+        size: this.pageSize(),
+      })
+      .pipe(
+        finalize(() => {
+          settled = true;
+          clearTimeout(minDisplay);
+          clearTimeout(safety);
+          if (this.periods() === null) {
+            this.periods.set([]);
+          }
+        })
+      )
+      .subscribe({
+        next: (res: PagedResponse<PayPeriodDTO>) => {
+          this.periods.set(res.content);
+          this.total.set(res.totalElements);
+        },
+        error: () => this.snack.error('Failed to load pay periods'),
+      });
   }
 
   onPageChange({ page, size }: { page: number; size: number }): void {

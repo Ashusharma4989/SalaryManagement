@@ -8,7 +8,7 @@ import { SnackbarService } from '../../shared/services/snack-bar.service';
 import { DataTableColumn, DataTableRowAction } from '../../shared/components/table/data-table.component';
 import { FormFieldComponent, SelectOption } from '../../shared/components/form/form-field.component';
 import { PageTemplateComponent } from '../../shared/components/page-template/page-template.component';
-import { UserDTO } from '../../shared/models';
+import { UserDTO, EmployeeDTO } from '../../shared/models';
 
 @Component({
   selector: 'app-users',
@@ -23,8 +23,8 @@ import { UserDTO } from '../../shared/models';
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent implements OnInit {
-  protected readonly users = signal<UserDTO[]>([]);
-  protected readonly loading = signal(false);
+  protected readonly users = signal<UserDTO[] | null>(null);
+  protected readonly employees = signal<EmployeeDTO[]>([]);
   protected readonly creating = signal(false);
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
@@ -45,7 +45,15 @@ export class UsersComponent implements OnInit {
         return r;
       },
     },
-    { key: 'employeeId', label: 'Employee ID', type: 'text' },
+    {
+      key: 'employeeId',
+      label: 'Employee',
+      type: 'text',
+      render: (v) => {
+        const emp = this.employees().find((e) => e.id === v);
+        return emp ? `${emp.firstName} ${emp.lastName}` : String(v ?? '');
+      },
+    },
   ];
 
   protected readonly actions: DataTableRowAction<UserDTO>[] = [
@@ -66,25 +74,51 @@ export class UsersComponent implements OnInit {
       username: ['', [Validators.required, Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       role: ['ROLE_HR', Validators.required],
+      employeeId: [null],
     });
   }
 
   ngOnInit(): void {
     this.load();
+    this.loadEmployees();
   }
 
   load(): void {
-    this.loading.set(true);
-    this.api.list<UserDTO>('/api/v1/users', {
-      page: this.pageIndex(),
-      size: this.pageSize(),
-    }).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: PagedResponse<UserDTO>) => {
-        this.users.set(res.content);
-        this.total.set(res.totalElements);
-      },
+    this.users.set(null);
+    let settled = false;
+
+    const minDisplay = setTimeout(() => {
+      if (!settled && this.users() === null) {
+        this.users.set([]);
+      }
+    }, 300);
+
+    const safety = setTimeout(() => {
+      if (!settled && this.users() === null) {
+        this.users.set([]);
+      }
+    }, 5000);
+
+    this.api
+      .list<UserDTO>('/api/v1/users', {
+        page: this.pageIndex(),
+        size: this.pageSize(),
+      })
+      .pipe(
+        finalize(() => {
+          settled = true;
+          clearTimeout(minDisplay);
+          clearTimeout(safety);
+          if (this.users() === null) {
+            this.users.set([]);
+          }
+        })
+      )
+      .subscribe({
+        next: (res: PagedResponse<UserDTO>) => {
+          this.users.set(res.content);
+          this.total.set(res.totalElements);
+        },
       error: () => this.snack.error('Failed to load users'),
     });
   }
@@ -95,8 +129,20 @@ export class UsersComponent implements OnInit {
     this.load();
   }
 
+  loadEmployees(): void {
+    this.api.list<EmployeeDTO>('/api/v1/employees').subscribe({
+      next: (res: PagedResponse<EmployeeDTO>) => {
+        this.employees.set(res.content);
+      },
+      error: () => {
+        this.employees.set([]);
+        this.snack.error('Failed to load employees');
+      },
+    });
+  }
+
   resetForm(): void {
-    this.form.reset({ role: 'ROLE_HR' });
+    this.form.reset({ role: 'ROLE_HR', employeeId: null });
   }
 
   submit(): void {
@@ -128,5 +174,14 @@ export class UsersComponent implements OnInit {
       },
       error: () => this.snack.error('Delete failed'),
     });
+  }
+
+  get employeeOptions(): SelectOption[] {
+    const emps = this.employees();
+    if (!Array.isArray(emps)) return [];
+    return emps.map((e) => ({
+      value: e.id,
+      label: `${e.firstName} ${e.lastName} (${e.employeeNumber})`,
+    }));
   }
 }

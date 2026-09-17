@@ -1,0 +1,27 @@
+<section class="dashboard">
+  <h1>Dashboard</h1>
+  <p>
+    Welcome, {{ auth.username() }}! You are signed in as {{ auth.role() }}.
+  </p>
+
+  <div class="cards-grid">
+    @for (card of cards(); track card.title) {
+      <div
+        class="summary-card"
+        [class.color-blue]="card.color === 'blue'"
+        [class.color-green]="card.color === 'green'"
+        [class.color-purple]="card.color === 'purple'"
+        [class.color-amber]="card.color === 'amber'"
+        (click)="navigate(card.route)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="navigate(card.route)"
+      >
+        <div class="card-content">
+          <span class="card-title">{{ card.title }}</span>
+          <span class="card-count">{{ card.count }}</span>
+        </div>
+      </div>
+    }
+   </div>
+</section>

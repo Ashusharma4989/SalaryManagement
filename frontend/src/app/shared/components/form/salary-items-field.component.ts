@@ -11,38 +11,40 @@ import { ButtonComponent } from '../button/button.component';
   template: `
     <div class="items-section">
       <label>Salary Items</label>
-      <div class="items-list" [formGroup]="form" [formArrayName]="controlName">
-        <div *ngFor="let item of itemControls; let i = index" [formGroup]="item" class="item-row">
-          <app-form-field
-            [form]="item"
-            controlName="name"
-            type="text"
-            placeholder="Item name"
-            [compact]="true"
-          />
-          <app-form-field
-            [form]="item"
-            controlName="type"
-            type="select"
-            [options]="typeOptions"
-            [compact]="true"
-          />
-          <app-form-field
-            [form]="item"
-            controlName="amount"
-            type="number"
-            placeholder="Amount"
-            [compact]="true"
-          />
-          <button
-            app-button
-            variant="danger"
-            size="sm"
-            type="button"
-            (clicked)="remove(i)"
-          >
-            ✕
-          </button>
+      <div class="items-list" [formGroup]="form">
+        <div [formArrayName]="controlName">
+          <div *ngFor="let item of itemControls; let i = index" [formGroup]="item" class="item-row">
+            <app-form-field
+              [form]="item"
+              controlName="name"
+              type="text"
+              placeholder="Item name"
+              [compact]="true"
+            />
+            <app-form-field
+              [form]="item"
+              controlName="type"
+              type="select"
+              [options]="typeOptions"
+              [compact]="true"
+            />
+            <app-form-field
+              [form]="item"
+              controlName="amount"
+              type="number"
+              placeholder="Amount"
+              [compact]="true"
+            />
+            <button
+              app-button
+              variant="danger"
+              size="sm"
+              type="button"
+              (clicked)="remove(i)"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       </div>
       <button

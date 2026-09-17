@@ -1,0 +1,72 @@
+.dashboard {
+  padding: 1rem 0;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: #1e293b;
+}
+
+p {
+  color: #475569;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  user-select: none;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card.color-blue {
+  border-left: 4px solid #3b82f6;
+}
+
+.summary-card.color-green {
+  border-left: 4px solid #10b981;
+}
+
+.summary-card.color-purple {
+  border-left: 4px solid #8b5cf6;
+}
+
+.summary-card.color-amber {
+  border-left: 4px solid #f59e0b;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334159;
+  margin-bottom: 0.5rem;
+}
+
+.card-count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+}

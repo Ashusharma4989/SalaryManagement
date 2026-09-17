@@ -1,13 +1,11 @@
 <app-page-template
   pageTitle="Users"
-  pageDescription="Manage system users. New users default to ROLE_HR."
   cardTitle="Create New User"
   [pageForm]="form"
   [saving]="creating()"
   submitLabel="Create User"
   [columns]="columns"
   [rows]="users()"
-  [loading]="loading()"
   [total]="total()"
   [pageIndex]="pageIndex()"
   [pageSize]="pageSize()"
@@ -39,5 +37,14 @@
     label="Role"
     type="select"
     [options]="roleOptions"
+  />
+  <app-form-field
+    page-template-form
+    [form]="form"
+    controlName="employeeId"
+    label="Employee"
+    type="select"
+    placeholder="-- None --"
+    [options]="employeeOptions"
   />
 </app-page-template>

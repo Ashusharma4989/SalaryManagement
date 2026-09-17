@@ -1,37 +1,47 @@
-<app-page-header [title]="pageTitle" [subtitle]="pageDescription" />
+<section class="dashboard-page">
+  <app-page-header [title]="pageTitle()" [subtitle]="pageDescription()" />
 
-<app-card [title]="cardTitle">
-  <form
-    [formGroup]="pageForm"
-    (ngSubmit)="$event.preventDefault(); onSubmit()"
-    class="form-grid"
-  >
-    <ng-content select="[page-template-form]"></ng-content>
-
-    <div class="form-actions">
-      <button
-        app-button
-        variant="primary"
-        type="submit"
-        [loading]="saving"
-        [disabled]="!canSubmit"
-      >
-        {{ submitLabel }}
-      </button>
+  <div class="accordion-card">
+    <div class="accordion-header" (click)="toggleForm()" role="button" tabindex="0" (keydown.enter)="toggleForm()">
+      <h2 class="accordion-title">{{ cardTitle() }}</h2>
+      <span class="accordion-toggle" [class.rotated]="formExpanded()">{{ formExpanded() ? '▼' : '▶' }}</span>
     </div>
-  </form>
-</app-card>
 
-<app-card>
-  <app-data-table
-    [columns]="columns"
-    [rows]="rows"
-    [loading]="loading"
-    [total]="total"
-    [pageIndex]="pageIndex"
-    [pageSize]="pageSize"
-    [actions]="actions"
-    [rowKey]="rowKey"
-    (pageChange)="onPageChange($event)"
-  />
-</app-card>
+    @if (formExpanded()) {
+      <div class="accordion-body">
+        <form
+          [formGroup]="pageForm()"
+          (ngSubmit)="$event.preventDefault(); onSubmit()"
+          class="form-grid"
+        >
+          <ng-content select="[page-template-form]"></ng-content>
+
+          <div class="form-actions">
+            <button
+              app-button
+              variant="primary"
+              type="submit"
+              [loading]="saving()"
+              [disabled]="!canSubmit()"
+            >
+              {{ submitLabel() }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+
+  <app-card>
+    <app-data-table
+      [columns]="columns()"
+      [rows]="rows()"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [actions]="actions()"
+      [rowKey]="rowKey()"
+      (pageChange)="onPageChange($event)"
+    />
+  </app-card>
+</section>

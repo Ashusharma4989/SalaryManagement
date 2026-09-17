@@ -23,8 +23,7 @@ import { DepartmentDTO } from '../../shared/models';
   styleUrls: ['./departments.component.scss'],
 })
 export class DepartmentsComponent implements OnInit {
-  protected readonly departments = signal<DepartmentDTO[]>([]);
-  protected readonly loading = signal(false);
+  protected readonly departments = signal<DepartmentDTO[] | null>(null);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
   protected readonly total = signal(0);
@@ -57,19 +56,43 @@ export class DepartmentsComponent implements OnInit {
   }
 
   load(): void {
-    this.loading.set(true);
-    this.api.list<DepartmentDTO>('/api/v1/departments', {
-      page: this.pageIndex(),
-      size: this.pageSize(),
-    }).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: PagedResponse<DepartmentDTO>) => {
-        this.departments.set(res.content);
-        this.total.set(res.totalElements);
-      },
-      error: () => this.snack.error('Failed to load departments'),
-    });
+    this.departments.set(null);
+    let settled = false;
+
+    const minDisplay = setTimeout(() => {
+      if (!settled && this.departments() === null) {
+        this.departments.set([]);
+      }
+    }, 300);
+
+    const safety = setTimeout(() => {
+      if (!settled && this.departments() === null) {
+        this.departments.set([]);
+      }
+    }, 5000);
+
+    this.api
+      .list<DepartmentDTO>('/api/v1/departments', {
+        page: this.pageIndex(),
+        size: this.pageSize(),
+      })
+      .pipe(
+        finalize(() => {
+          settled = true;
+          clearTimeout(minDisplay);
+          clearTimeout(safety);
+          if (this.departments() === null) {
+            this.departments.set([]);
+          }
+        })
+      )
+      .subscribe({
+        next: (res: PagedResponse<DepartmentDTO>) => {
+          this.departments.set(res.content);
+          this.total.set(res.totalElements);
+        },
+        error: () => this.snack.error('Failed to load departments'),
+      });
   }
 
   onPageChange({ page, size }: { page: number; size: number }): void {

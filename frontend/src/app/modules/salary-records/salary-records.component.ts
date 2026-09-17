@@ -34,11 +34,10 @@ import { SelectOption } from '../../shared/components/form/form-field.component'
   styleUrls: ['./salary-records.component.scss'],
 })
 export class SalaryRecordsComponent implements OnInit {
-  protected readonly records = signal<SalaryRecordDTO[]>([]);
+  protected readonly records = signal<SalaryRecordDTO[] | null>(null);
   protected readonly employees = signal<EmployeeDTO[]>([]);
   protected readonly payPeriods = signal<PayPeriodDTO[]>([]);
   protected readonly currentUserId = signal<number | null>(null);
-  protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
   protected readonly total = signal(0);
@@ -77,39 +76,75 @@ export class SalaryRecordsComponent implements OnInit {
   }
 
   load(): void {
-    this.loading.set(true);
-    this.api.list<SalaryRecordDTO>('/api/v1/salary-records', {
-      page: this.pageIndex(),
-      size: this.pageSize(),
-    }).pipe(
-      finalize(() => this.loading.set(false))
-    ).subscribe({
-      next: (res: PagedResponse<SalaryRecordDTO>) => {
-        this.records.set(res.content);
-        this.total.set(res.totalElements);
-      },
-      error: () => this.snack.error('Failed to load salary records'),
-    });
+    this.records.set(null);
+    let settled = false;
+
+    const minDisplay = setTimeout(() => {
+      if (!settled && this.records() === null) {
+        this.records.set([]);
+      }
+    }, 300);
+
+    const safety = setTimeout(() => {
+      if (!settled && this.records() === null) {
+        this.records.set([]);
+      }
+    }, 5000);
+
+    this.api
+      .list<SalaryRecordDTO>('/api/v1/salary-records', {
+        page: this.pageIndex(),
+        size: this.pageSize(),
+      })
+      .pipe(
+        finalize(() => {
+          settled = true;
+          clearTimeout(minDisplay);
+          clearTimeout(safety);
+          if (this.records() === null) {
+            this.records.set([]);
+          }
+        })
+      )
+      .subscribe({
+        next: (res: PagedResponse<SalaryRecordDTO>) => {
+          this.records.set(res.content);
+          this.total.set(res.totalElements);
+        },
+        error: () => this.snack.error('Failed to load salary records'),
+      });
   }
 
   loadReferenceData(): void {
-    this.api.get<EmployeeDTO[]>('/api/v1/employees').subscribe({
-      next: (list) => this.employees.set(list),
-      error: () => this.snack.error('Failed to load employees'),
+    this.api.list<EmployeeDTO>('/api/v1/employees').subscribe({
+      next: (res: PagedResponse<EmployeeDTO>) => {
+        this.employees.set(res.content);
+      },
+      error: () => {
+        this.employees.set([]);
+        this.snack.error('Failed to load employees');
+      },
     });
-    this.api.get<PayPeriodDTO[]>('/api/v1/pay-periods').subscribe({
-      next: (list) => this.payPeriods.set(list),
-      error: () => this.snack.error('Failed to load pay periods'),
+    this.api.list<PayPeriodDTO>('/api/v1/pay-periods').subscribe({
+      next: (res: PagedResponse<PayPeriodDTO>) => {
+        this.payPeriods.set(res.content);
+      },
+      error: () => {
+        this.payPeriods.set([]);
+        this.snack.error('Failed to load pay periods');
+      },
     });
   }
 
   loadCurrentUserId(): void {
-    this.api.get<UserDTO[]>('/api/v1/users').subscribe({
-      next: (users) => {
-        const me = users.find((u) => u.username === this.auth.username());
+    this.api.list<UserDTO>('/api/v1/users').subscribe({
+      next: (res: PagedResponse<UserDTO>) => {
+        const me = res.content.find((u) => u.username === this.auth.username());
         this.currentUserId.set(me?.id ?? null);
       },
-      error: () => {},
+      error: () => {
+        this.currentUserId.set(null);
+      },
     });
   }
 
@@ -149,7 +184,8 @@ export class SalaryRecordsComponent implements OnInit {
         label: 'Employee',
         type: 'text',
         render: (v) => {
-          const emp = this.employees().find((e) => e.id === v);
+          const emps = this.employees();
+          const emp = Array.isArray(emps) ? emps.find((e) => e.id === v) : null;
           return emp ? `${emp.firstName} ${emp.lastName}` : String(v ?? '');
         },
       },
@@ -158,7 +194,8 @@ export class SalaryRecordsComponent implements OnInit {
         label: 'Pay Period',
         type: 'text',
         render: (v) => {
-          const pp = this.payPeriods().find((p) => p.id === v);
+          const periods = this.payPeriods();
+          const pp = Array.isArray(periods) ? periods.find((p) => p.id === v) : null;
           return pp ? `${pp.startDate} – ${pp.endDate}` : String(v ?? '');
         },
       },
@@ -212,6 +249,7 @@ export class SalaryRecordsComponent implements OnInit {
       payPeriodId: this.form.value.payPeriodId,
       baseSalary: this.form.value.baseSalary,
       currencyCode: this.form.value.currencyCode,
+      status: this.editingId() ? undefined : 'DRAFT',
       salaryItems: this.items.getRawValue().map((i: any) => ({
         name: i.name,
         type: i.type,
@@ -275,14 +313,18 @@ export class SalaryRecordsComponent implements OnInit {
   }
 
   get employeeOptions(): SelectOption[] {
-    return this.employees().map((e) => ({
+    const emps = this.employees();
+    if (!Array.isArray(emps)) return [];
+    return emps.map((e) => ({
       value: e.id,
       label: `${e.firstName} ${e.lastName}`,
     }));
   }
 
   get payPeriodOptions(): SelectOption[] {
-    return this.payPeriods().map((p) => ({
+    const periods = this.payPeriods();
+    if (!Array.isArray(periods)) return [];
+    return periods.map((p) => ({
       value: p.id,
       label: `${p.startDate} – ${p.endDate} (${p.status})`,
     }));

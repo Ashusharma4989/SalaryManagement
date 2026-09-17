@@ -1,45 +1,52 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input, computed, ChangeDetectionStrategy, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from '../card/card.component';
 import { ButtonComponent } from '../button/button.component';
-import { DataTableComponent, DataTableColumn, DataTableRowAction } from '../table/data-table.component';
+import { DataTableComponent } from '../table/data-table.component';
 import { PageHeaderComponent } from '../page-header/page-header.component';
 
 @Component({
   selector: 'app-page-template',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    CardComponent,
-    ButtonComponent,
-    DataTableComponent,
-    PageHeaderComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, CardComponent, ButtonComponent, DataTableComponent, PageHeaderComponent],
   templateUrl: './page-template.component.html',
   styleUrls: ['./page-template.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTemplateComponent<T = unknown> {
-  @Input() pageTitle: string = '';
-  @Input() pageDescription: string | null = null;
+  readonly pageTitle = input('');
+  readonly pageDescription = input<string | null>(null);
+  readonly pageForm = input<FormGroup>(new FormGroup({}));
+  readonly saving = input(false);
+  readonly submitLabel = input('Create');
+  readonly cardTitle = input('Add New');
+  readonly columns = input<any[]>([]);
+  readonly rows = input<T[] | null>(null);
+  readonly total = input(0);
+  readonly pageIndex = input(0);
+  readonly pageSize = input(25);
+  readonly rowKey = input('id');
+  readonly actions = input<any[]>([]);
 
-  @Input() pageForm!: FormGroup;
-  @Input() saving: boolean = false;
-  @Input() submitLabel: string = 'Create';
-  @Input() cardTitle: string = 'Add New';
+  readonly formExpanded = signal(false);
 
-  @Input() columns: DataTableColumn[] = [];
-  @Input() rows: T[] = [];
-  @Input() loading: boolean = false;
-  @Input() total: number = 0;
-  @Input() pageIndex: number = 0;
-  @Input() pageSize: number = 25;
-  @Input() rowKey: string = 'id';
-  @Input() actions: DataTableRowAction<T>[] = [];
+  private readonly _formInvalid = signal(true);
+
+  readonly canSubmit = computed(() => !this._formInvalid() && !this.saving());
 
   @Output() formSubmit = new EventEmitter<void>();
   @Output() pageChange = new EventEmitter<{ page: number; size: number }>();
+
+  constructor() {
+    effect(() => {
+      const form = this.pageForm();
+      this._formInvalid.set(form.invalid);
+      form.statusChanges.subscribe(() => {
+        this._formInvalid.set(form.invalid);
+      });
+    });
+  }
 
   onSubmit(): void {
     if (this.formSubmit.observed) {
@@ -51,7 +58,7 @@ export class PageTemplateComponent<T = unknown> {
     this.pageChange.emit({ page, size });
   }
 
-  get canSubmit(): boolean {
-    return !this.pageForm.invalid && !this.saving;
+  toggleForm(): void {
+    this.formExpanded.update((v) => !v);
   }
 }
