@@ -1,217 +1,269 @@
-# Salary Management — Developer README
+# Salary Management System
 
-A concise, step‑by‑step guide to set up and run the Salary Management monorepo (Spring Boot backend + Angular frontend + PostgreSQL).
-
----
-
-## Quick Summary
-- Backend: Java 17, Spring Boot 3.x (tested with 3.1+), Spring Data JPA, Flyway 9+, Spring Security
-- Frontend: Angular 16+ (latest LTS), Node.js v24, Angular Material (recommended)
-- Database: PostgreSQL 12+
-- Repo layout:
-  - `backend/` — Spring Boot app
-  - `frontend/` — Angular app
-  - `DB/` — manual SQL helper
-  - `README.md` — this file
+A full-stack enterprise-grade salary management application built with Spring Boot and Angular, featuring audit trails, AI-powered chat assistance, role-based access control, and a modern responsive UI.
 
 ---
 
-## Prerequisites (install before starting)
-- Git
-- Java JDK 17+ and `JAVA_HOME` set
-- Maven (or use `./mvnw` wrapper included)
-- Node.js v24 (use `nvm` to install/manage)
-- npm (comes with Node)
-- Angular CLI (optional; `npx` works)
-- PostgreSQL 12+ (Postgres.app, EnterpriseDB, Homebrew, or Docker)
-- pgAdmin (optional GUI)
-- Recommended: `jq` for pretty curl output
+## Overview
+
+The Salary Management System automates end-to-end payroll operations — from employee onboarding and pay period management to salary calculation, processing workflows, and comprehensive audit logging. An integrated AI chatbot (powered by Ollama) provides intelligent assistance for salary-related queries.
 
 ---
 
-## Environment (.env)
-The repository includes `.env.example` as the canonical example for local development. Do not commit secrets.
+## Features
 
-Copy and edit before running services:
-```bash
-cp .env.example .env
-# edit .env with your DB credentials and other secrets
-set -a; source .env; set +a
-```
 
----
+| **Module** | **Description** |
+|---|---|
+| Authentication & Security | JWT-based auth, role-based access control, secure API endpoints |
+| Department Management | Create, read, update, delete departments |
+| Employee Management | Manage employee profiles, departments, locations, and currencies |
+| Pay Period Management | Define pay periods with status tracking (OPEN, CLOSED) |
+| Salary Records | Create salary records with line items, process through workflow |
+| Salary Processing | Multi-stage workflow: DRAFT → PROCESSED → POSTED |
+| Audit Trail | Full audit logging of all CRUD operations and login events |
+| AI Chatbot | Local Llama 3.2 chatbot for salary management assistance |
+| Search & Sort | Real-time search and column sorting across all modules |
+| Responsive UI | Modern, responsive design with dark mode support |
 
-## Database Setup
-
-Option A — Manual (pgAdmin / psql)
-- See `DB/salary_management.sql` for a single-run SQL helper.
-- For automated migrations, see `backend/src/main/resources/db/migration/V1__init_schema.sql` (Flyway).
-
-Create the database and role using your preferred tool (pgAdmin, psql, etc.). Do not hardcode credentials in the repo — put them in `.env` (see above).
-
-Quick DB test (terminal) — use the credentials from your `.env`:
-```bash
-# Example (reads values from environment; adjust if you use a different shell/load strategy)
-PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h localhost -U "$SPRING_DATASOURCE_USERNAME" -d salary_management -c "SELECT version();"
-```
 
 ---
 
-## Backend — Build & Run (dev)
-1. Ensure `.env` loaded (see above).
-2. From `backend/`:
-```bash
-cd backend
-# Dev run with hot reload
-./mvnw spring-boot:run
-# OR build and run jar
-./mvnw clean package -DskipTests
-java -jar target/*.jar
-```
-3. Health check (if actuator enabled):
-```bash
-curl http://localhost:8080/actuator/health | jq .
-```
-Logs to watch:
-- `HikariPool` start → DB connection OK
-- `Flyway` → migrations applied
-- Any `ERROR` / connection failures
+### Core Modules
 
-Config is read from `backend/src/main/resources/application.yml` — it uses env placeholders so `.env` values are applied.
+#### 1. Authentication & Security
+- **JWT-based authentication** with secure token storage
+- **Role-based access control** (admin, hr, manager)
+- **Login audit logging** — every successful login is recorded in the audit trail
+- **Default credentials**: `admin` / `admin`
 
----
+#### 2. Department Management
+- Create, view, update, and delete departments
+- Search by name with auto-complete suggestions
+- Sort by any column (name, creation date, etc.)
+- Pagination with configurable page sizes
 
-## Frontend — Dev & Production
+#### 3. Employee Management
+- Full employee profiles (name, email, employee number, department, location, hire date, currency)
+- Department assignment via dropdown select
+- Search across multiple fields (employee number, first name, last name, email)
+- Column sorting and server-side pagination
 
-Install Node (via nvm):
-```bash
-# install nvm (if not already)
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm install 24
-nvm use 24
-```
+#### 4. Pay Period Management
+- Define pay periods with start/end dates and status (OPEN, CLOSED)
+- Workflow status tracking — only open periods can be assigned to salary records
+- Search by status and date range
+- Full audit trail on all changes
 
-Create / Install (if not created):
-```bash
-cd <repo-root>
-npx @angular/cli@latest new frontend --routing --style=scss --skip-git
-cd frontend
-npm install
-npx ng add @angular/material
-```
+#### 5. Salary Records
+A complete salary processing workflow with three distinct statuses:
 
-Dev server (proxy `/api` → backend)
-- Create `frontend/proxy.conf.json`:
-```json
-{ "/api": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true } }
-```
-- Run:
-```bash
-cd frontend
-npx ng serve --proxy-config proxy.conf.json
-# open http://localhost:4200
-```
+| Status | Description | Available Actions |
+|--------|-------------|-------------------|
+| `DRAFT` | Initial record with base salary and line items | Edit, Process, Delete |
+| `PROCESSED` | Calculated gross, deductions, and net pay | Post, Edit line items |
+| `POSTED` | Final posted state | Read-only |
 
-Production build + bundle into backend
-```bash
-# build
-cd frontend
-npm run build -- --configuration=production
+- **Dynamic salary line items** — add/remove earnings and deductions with live totals
+- **Auto-calculation** — gross pay, total deductions, and net pay computed automatically
+- **Multi-step workflow**: Create (DRAFT) → Process (PROCESSED) → Post (POSTED)
+- **Employee & Pay Period assignment** with validation
 
-# copy build into backend static folder
-rm -rf ../backend/src/main/resources/static/*
-cp -r dist/<project-name>/* ../backend/src/main/resources/static/
+#### 6. Audit Trail
+Every create, update, and delete operation is logged with:
+- **Action type** (CREATE, UPDATE, DELETE, LOGIN)
+- **Entity type** and entity ID
+- **Old values** and new values (for UPDATE operations)
+- **Timestamp** and **performed by** (username)
+- **API endpoint** for quick reference
+- Searchable audit log dashboard with pagination
 
-# package backend and run jar
-cd ../backend
-./mvnw clean package -DskipTests
-java -jar target/*.jar
-# open http://localhost:8080
-```
+#### 7. AI Chatbot (Ollama)
+- Integrated AI assistant powered by **Llama 3.2** (local inference)
+- Conversational interface for salary-related questions
+- Chat history with timestamps (auto-scrolling)
+- Runs entirely locally — no external API keys required
+- Optional: works without Ollama (chatbot shows graceful error)
 
-Important: in frontend services use relative API paths (e.g., `/api/v1/employees`) so both proxy (dev) and same-origin (prod) work.
+#### 8. Search, Sort & Pagination
+- **Global search** with real-time filtering on every module
+- **Column sorting** — click any column header to sort ascending/descending
+- **Server-side pagination** with configurable page sizes (25, 50, 100)
+- **Row action buttons** — context-sensitive actions per row (edit, process, post, delete)
+
+#### 9. Modern UI
+- **Accordion-style forms** — forms auto-expand on edit, with cancel button
+- **Card-based dashboard** — summary cards with key metrics
+- **Responsive design** — works on desktop and mobile
+- **Form validation** — real-time validation with error messages
+- **Snackbar notifications** — success/error feedback on all operations
 
 ---
 
-## Authentication (dev notes)
-- Spring Security on classpath will enable default form-login.
-- For quick dev access, set `SPRING_SECURITY_USER_NAME` and `SPRING_SECURITY_USER_PASSWORD` in `.env`.
-- For production-quality auth, implement JWT:
-  - Backend: JWT filter, `User` entity, `UserRepository`, `AuthController`
-  - Frontend: `AuthService`, `AuthInterceptor` to attach `Authorization: Bearer <token>`
+### Technical Features
+
+| **Category** | **Details** |
+|---|---|
+| **Backend Framework** | Spring Boot 4.x, Java 17 |
+| **Frontend Framework** | Angular 17+, TypeScript |
+| **Database** | PostgreSQL 15+ |
+| **ORM** | Spring Data JPA (Hibernate 6.x) |
+| **Schema Migrations** | Flyway |
+| **Security** | Spring Security 6.x, JWT |
+| **API Style** | RESTful with pagination |
+| **Audit Logging** | Spring AOP Aspect + Authentication Event Listeners |
+| **AI/LLM** | Ollama (Llama 3.2:3b) |
+| **Build Tools** | Maven (backend), npm/Angular CLI (frontend) |
 
 ---
 
-## Testing & Debugging
-- Backend logs: `./mvnw spring-boot:run` output
-- Actuator health: `http://localhost:8080/actuator/health`
-- DB tables: `psql -c "\dt"`
-- Frontend network: Browser DevTools → Network to inspect `/api` calls
-- Common errors:
-  - CORS error → use proxy or enable CORS in backend
-  - DB connection fail → check `.env`, start Postgres, inspect `pg_isready`
-  - Angular CLI Node version → use `nvm` to switch Node
+## Quick Start
 
----
+See **[setup.md](setup.md)** for the complete step-by-step setup guide.
 
-## Security & Ops
-- Never commit `.env` or secrets. Use environment variables or a secrets manager in production.
-- Use HTTPS and secure cookie/localStorage strategies for tokens.
-- Use Flyway for schema migrations and never edit an applied migration—add new migration files.
-
----
-
-## Useful Commands Summary
-
-Start DB (example using psql/pg_ctl depends on your installation):
 ```bash
-# psql test
-PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h localhost -U "$SPRING_DATASOURCE_USERNAME" -d salary_management -c "SELECT 1;"
-# stop EnterpriseDB installation (example path)
-sudo /Library/PostgreSQL/15/bin/pg_ctl -D /Library/PostgreSQL/15/data stop
-```
+# 1. Start PostgreSQL
+#    Ensure database 'salary_management' exists
 
-Backend:
-```bash
-cd backend
-set -a; source ../.env; set +a
-./mvnw spring-boot:run
-# or jar
-./mvnw clean package -DskipTests
-java -jar target/*.jar
-```
+# 2. Start backend (port 8080)
+cd backend && ./mvnw spring-boot:run
 
-Frontend (dev):
-```bash
-cd frontend
-npx ng serve --proxy-config proxy.conf.json
-```
+# 3. Start frontend (port 4200)
+cd frontend && ng serve
 
-Frontend (prod build + bundle):
-```bash
-cd frontend
-npm run build -- --configuration=production
-cp -r dist/<project>/* ../backend/src/main/resources/static/
-cd ../backend
-./mvnw clean package -DskipTests
-java -jar target/*.jar
+# 4. Open in browser: http://localhost:4200
+#    Login with admin / admin
 ```
 
 ---
 
-## Where to Next (recommended)
-1. Create `.env` with DB credentials.  
-2. Create DB role + database (pgAdmin or psql).  
-3. Start backend and confirm Flyway applied migrations.  
-4. Start frontend dev server with proxy and confirm UI calls succeed.  
-5. Implement JWT auth and frontend login flow.
+## API Endpoints
+
+| Module | Method | Endpoint | Description |
+|--------|--------|----------|-------------|
+| Auth | POST | `/api/v1/auth/login` | Authenticate and receive JWT |
+| Departments | GET | `/api/v1/departments` | List with search, sort, pagination |
+| Departments | POST | `/api/v1/departments` | Create new department |
+| Departments | PUT | `/api/v1/departments/{id}` | Update department |
+| Departments | DELETE | `/api/v1/departments/{id}` | Delete department |
+| Employees | GET | `/api/v1/employees` | List with search, sort, pagination |
+| Employees | POST | `/api/v1/employees` | Create new employee |
+| Employees | PUT | `/api/v1/employees/{id}` | Update employee |
+| Employees | DELETE | `/api/v1/employees/{id}` | Delete employee |
+| Pay Periods | GET | `/api/v1/pay-periods` | List with search, sort, pagination |
+| Pay Periods | POST | `/api/v1/pay-periods` | Create new pay period |
+| Pay Periods | PUT | `/api/v1/pay-periods/{id}` | Update pay period |
+| Pay Periods | DELETE | `/api/v1/pay-periods/{id}` | Delete pay period |
+| Salary Records | GET | `/api/v1/salary-records` | List with search, sort, pagination |
+| Salary Records | POST | `/api/v1/salary-records` | Create salary record |
+| Salary Records | PUT | `/api/v1/salary-records/{id}` | Update salary record |
+| Salary Records | PATCH | `/api/v1/salary-records/{id}/process` | Process (DRAFT → PROCESSED) |
+| Salary Records | PATCH | `/api/v1/salary-records/{id}/post` | Post (PROCESSED → POSTED) |
+| Salary Records | DELETE | `/api/v1/salary-records/{id}` | Delete salary record |
+| Audit | GET | `/api/v1/audit` | Search audit logs |
+| Users | GET | `/api/v1/users` | List application users |
+| Users | GET | `/api/v1/users/me` | Get current authenticated user |
+
+All endpoints support:
+- `?page={n}&size={n}` — pagination
+- `?search={term}` — full-text search
+- `&sort={field},{direction}` — sorting (asc/desc)
 
 ---
 
-If you want, I will:
-- populate `README.md` in the repo (done), and/or
-- generate the frontend auth skeleton (`AuthService`, `AuthInterceptor`, `Login` component), and/or
-- create a small `scripts/` helper to automate copy of `dist` into backend static.
+## Screenshots
 
-Which of these should I do next?
+### Login Page
+Secure JWT-based authentication with audit logging.
+
+### Dashboard
+Overview with summary cards and quick access to all modules.
+
+### Salary Records Table
+Full data table with search, sort, pagination, and context-sensitive action buttons.
+
+### Salary Record Form
+Accordion-style form with dynamic salary line items, auto-calculated totals, and form validation.
+
+### Audit Trail
+Searchable audit log showing all create, update, and delete operations with old/new values.
+
+### AI Chatbot
+Local Llama 3.2-powered chatbot for salary management assistance with chat history.
+
+---
+
+## Architecture
+
+```
+SalaryManagement/
+├── backend/                              # Spring Boot 4.x application
+│   ├── src/main/java/com/...
+│   │   ├── entity/                       # JPA Entities (10+ entities)
+│   │   ├── repository/                   # Spring Data JPA Repositories
+│   │   ├── controller/                   # REST Controllers (8 controllers)
+│   │   ├── service/                      # Business Logic Services
+│   │   ├── security/                     # JWT Auth, SecurityConfig, AuthController
+│   │   ├── audit/                        # AuditAspect, LoginAuditListener, AuditController
+│   │   ├── config/                       # DataInitializer, ModelMapperConfig
+│   │   └── SalaryManagementApplication.java
+│   ├── src/main/resources/
+│   │   ├── db/migration/                 # Flyway migrations (V1 - V5+)
+│   │   ├── application.yml               # Spring configuration
+│   │   └── data.sql                      # Seed data
+│   └── pom.xml
+├── frontend/                             # Angular 17+ application
+│   ├── src/app/
+│   │   ├── modules/                      # Feature modules
+│   │   │   ├── departments/              # Department CRUD module
+│   │   │   ├── employees/                # Employee CRUD module
+│   │   │   ├── pay-periods/              # Pay Period module
+│   │   │   ├── salary-records/           # Salary Record module (core workflow)
+│   │   │   └── users/                    # User management module
+│   │   ├── shared/                       # Shared components
+│   │   │   ├── services/                 # ApiService, AuthService, SnackbarService
+│   │   │   ├── components/               # Reusable UI components
+│   │   │   │   ├── page-template/        # Master page template (accordion, table, form)
+│   │   │   │   ├── card/                 # Dashboard cards
+│   │   │   │   ├── table/                # Data table with search/sort/pagination
+│   │   │   │   ├── form/                 # Form fields, salary items field
+│   │   │   │   └── chatbot/              # AI chatbot component (Ollama)
+│   │   │   └── models/                   # DTOs and interfaces
+│   │   ├── auth/                         # Login/register, JWT interceptor
+│   │   └── shell/                        # Layout (header, sidebar)
+│   ├── angular.json
+│   └── package.json
+├── setup.md                              # Complete setup guide
+├── README.md                             # This file
+└── AGENTS.md                             # Build and test commands
+```
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Angular 17+, TypeScript, Angular Reactive Forms |
+| **Backend** | Spring Boot 4.x, Java 17, Maven |
+| **Database** | PostgreSQL 15 |
+| **ORM** | Spring Data JPA, Hibernate 6.x |
+| **Security** | Spring Security 6.x, JWT |
+| **API Documentation** | RESTful JSON |
+| **AI/Chatbot** | Ollama, Llama 3.2:3b |
+| **Testing** | JUnit 5, Angular TestBed |
+| **Dev Tools** | Spring Boot DevTools, Angular CLI, Flyway |
+
+---
+
+## License
+
+[MIT License](LICENSE)
+
+---
+
+## Acknowledgments
+
+- Built with Spring Boot and Angular
+- AI chatbot powered by [Ollama](https://ollama.com) and Llama 3.2
+- Icons by [Heroicons](https://heroicons.com)
