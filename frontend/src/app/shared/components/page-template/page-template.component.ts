@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, input, computed, ChangeDetectionStrategy, effect, signal } from '@angular/core';
+import { Component, EventEmitter, Output, input, model, computed, ChangeDetectionStrategy, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from '../card/card.component';
@@ -34,7 +34,8 @@ export class PageTemplateComponent<T = unknown> {
   readonly sortField = input<string | null>(null);
   readonly sortDirection = input<'asc' | 'desc'>('asc');
 
-  readonly formExpanded = signal(false);
+  readonly formExpanded = input(false);
+  @Output() readonly formExpandedChange = new EventEmitter<boolean>();
 
   private readonly _formInvalid = signal(true);
 
@@ -45,7 +46,7 @@ export class PageTemplateComponent<T = unknown> {
   @Output() pageChange = new EventEmitter<{ page: number; size: number }>();
   @Output() sort = new EventEmitter<{ field: string; direction: 'asc' | 'desc' }>();
   @Output() search = new EventEmitter<string>();
-  @Output() toggleFormEvent = new EventEmitter<void>();
+  @Output() cancel = new EventEmitter<void>();
 
   constructor() {
     effect(() => {
@@ -76,7 +77,12 @@ export class PageTemplateComponent<T = unknown> {
   }
 
   toggleForm(): void {
-    this.formExpanded.update((v) => !v);
-    this.toggleFormEvent.emit();
+    const newVal = !this.formExpanded();
+    this.formExpandedChange.emit(newVal);
+  }
+
+  onCancel(): void {
+    this.formExpandedChange.emit(false);
+    this.cancel.emit();
   }
 }

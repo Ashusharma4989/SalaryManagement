@@ -26,6 +26,7 @@ export class DepartmentsComponent implements OnInit {
   protected readonly departments = signal<DepartmentDTO[] | null>(null);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly formExpanded = signal(false);
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
@@ -121,16 +122,19 @@ export class DepartmentsComponent implements OnInit {
   edit(dept: DepartmentDTO): void {
     this.editingId.set(dept.id ?? null);
     this.form.patchValue({ name: dept.name });
+    this.formExpanded.set(true);
   }
 
   add(): void {
     this.editingId.set(null);
     this.form.reset();
+    this.formExpanded.set(true);
   }
 
   cancel(): void {
     this.editingId.set(null);
     this.form.reset();
+    this.formExpanded.set(false);
   }
 
   submit(): void {

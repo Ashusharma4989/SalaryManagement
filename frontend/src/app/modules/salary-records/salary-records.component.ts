@@ -40,6 +40,7 @@ export class SalaryRecordsComponent implements OnInit {
   protected readonly currentUserId = signal<number | null>(null);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly formExpanded = signal(false);
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
@@ -239,6 +240,7 @@ export class SalaryRecordsComponent implements OnInit {
       baseSalary: record.baseSalary,
       currencyCode: record.currencyCode ?? 'USD',
     });
+    this.formExpanded.set(true);
   }
 
   add(): void {
@@ -247,6 +249,7 @@ export class SalaryRecordsComponent implements OnInit {
     this.form.reset({
       currencyCode: 'USD',
     });
+    this.formExpanded.set(true);
   }
 
   cancel(): void {

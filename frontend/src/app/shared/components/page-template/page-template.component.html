@@ -19,6 +19,14 @@
           <div class="form-actions">
             <button
               app-button
+              variant="ghost"
+              type="button"
+              (clicked)="onCancel()"
+            >
+              Cancel
+            </button>
+            <button
+              app-button
               variant="primary"
               type="submit"
               [loading]="saving()"

@@ -28,6 +28,7 @@ export class EmployeesComponent implements OnInit {
   protected readonly departments = signal<DepartmentDTO[]>([]);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly formExpanded = signal(false);
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
@@ -157,16 +158,19 @@ export class EmployeesComponent implements OnInit {
       currencyCode: emp.currencyCode ?? null,
       hireDate: emp.hireDate ?? null,
     });
+    this.formExpanded.set(true);
   }
 
   add(): void {
     this.editingId.set(null);
     this.form.reset();
+    this.formExpanded.set(true);
   }
 
   cancel(): void {
     this.editingId.set(null);
     this.form.reset();
+    this.formExpanded.set(false);
   }
 
   submit(): void {

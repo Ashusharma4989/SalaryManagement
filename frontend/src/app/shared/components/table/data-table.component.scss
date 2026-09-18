@@ -74,6 +74,9 @@
 .actions-cell {
   text-align: right;
   white-space: nowrap;
+  display: flex;
+  gap: 0.375rem;
+  justify-content: flex-end;
 }
 
 .actions-head {

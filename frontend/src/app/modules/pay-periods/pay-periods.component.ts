@@ -26,6 +26,7 @@ export class PayPeriodsComponent implements OnInit {
   protected readonly periods = signal<PayPeriodDTO[] | null>(null);
   protected readonly saving = signal(false);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly formExpanded = signal(false);
   protected readonly total = signal(0);
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(25);
@@ -145,16 +146,19 @@ export class PayPeriodsComponent implements OnInit {
       endDate: period.endDate,
       status: period.status,
     });
+    this.formExpanded.set(true);
   }
 
   add(): void {
     this.editingId.set(null);
     this.form.reset({ status: 'OPEN' });
+    this.formExpanded.set(true);
   }
 
   cancel(): void {
     this.editingId.set(null);
     this.form.reset({ status: 'OPEN' });
+    this.formExpanded.set(false);
   }
 
   submit(): void {
